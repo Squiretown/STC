@@ -9,6 +9,8 @@ interface Lead {
   message: string;
   created_at?: string;
 }
+
+const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
@@ -63,6 +65,9 @@ serve(async (req) => {
         }
       );
     }
+
+    // Dynamic import of Resend to avoid import issues
+    const { Resend } = await import('npm:resend@3.2.0');
 
     // Initialize Resend
     const resend = new Resend(resendApiKey);
@@ -281,7 +286,10 @@ Squiretown Consulting LLC
     const { data, error } = await resend.emails.send({
       from: fromEmail,
       to: adminEmail,
-    return new Response('ok', { headers: corsHeaders });
+      subject: subject,
+      html: htmlContent,
+      text: textContent,
+    });
 
     if (error) {
       console.error('Failed to send email:', error);
@@ -326,58 +334,3 @@ Squiretown Consulting LLC
     );
   }
 });
-    // Get environment variables first
-    const resendApiKey = Deno.env.get('RESEND_API_KEY');
-    const adminEmail = Deno.env.get('ADMIN_EMAIL') || Deno.env.get('ADMIN_EMAIL_RECIPIENT');
-    const fromEmail = Deno.env.get('FROM_EMAIL') || 'notifications@support247.solutions';
-
-    console.log('Environment check:', {
-      hasResendKey: !!resendApiKey,
-      adminEmail: adminEmail,
-      fromEmail: fromEmail
-    });
-
-    if (!resendApiKey) {
-      console.error('RESEND_API_KEY environment variable is not set');
-      return new Response(
-        JSON.stringify({ error: 'Server configuration error: Missing RESEND_API_KEY' }),
-        {
-          status: 500,
-          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-        }
-      );
-    }
-
-    if (!adminEmail) {
-      console.error('ADMIN_EMAIL environment variable is not set');
-      return new Response(
-        JSON.stringify({ error: 'Admin email not configured' }),
-        {
-          status: 500,
-          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-        }
-      );
-    }
-
-    // Parse the request body
-    const requestBody = await req.json();
-    console.log('Request body received:', requestBody);
-    
-    const lead: Lead = requestBody.record || requestBody;
-
-    if (!lead || !lead.name || !lead.email || !lead.message) {
-      console.error('Invalid lead data received:', lead);
-      return new Response(
-        JSON.stringify({ error: 'Invalid lead data' }),
-        {
-          status: 400,
-          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-        }
-      );
-    }
-
-    // Dynamic import of Resend to avoid import issues
-    const { Resend } = await import('npm:resend@3.2.0');
-    const resend = new Resend(resendApiKey);
-
-    console.log('Resend client initialized, processing lead:', lead.name);
