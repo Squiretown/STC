@@ -16,10 +16,21 @@ export const useCMS = () => {
       setLoading(true);
       setError(null);
 
-     // Check if Supabase is properly configured
-     if (!import.meta.env.VITE_SUPABASE_URL || !import.meta.env.VITE_SUPABASE_ANON_KEY) {
-       throw new Error('Supabase configuration missing. Please check your environment variables.');
-     }
+      // Check if Supabase is properly configured
+      const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+      const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
+      
+      if (!supabaseUrl || !supabaseAnonKey) {
+        throw new Error('Supabase configuration missing. Please check your environment variables.');
+      }
+
+      // Validate URL format
+      try {
+        new URL(supabaseUrl);
+      } catch {
+        throw new Error(`Invalid Supabase URL format: ${supabaseUrl}`);
+      }
+
       // Fetch settings
       const { data: settings, error: settingsError } = await supabase
         .from('site_settings')
@@ -57,20 +68,23 @@ export const useCMS = () => {
     } catch (err) {
       console.error('Error fetching CMS data:', err);
      
-     // Provide more helpful error messages
-     let errorMessage = 'Failed to fetch CMS data';
-     
-     if (err instanceof Error) {
-       if (err.message.includes('Failed to fetch')) {
-         errorMessage = 'Cannot connect to Supabase. Please check your internet connection and Supabase configuration.';
-       } else if (err.message.includes('Supabase configuration')) {
-         errorMessage = err.message;
-       } else {
-         errorMessage = err.message;
-       }
-     }
-     
-     setError(errorMessage);
+      // Provide more helpful error messages
+      let errorMessage = 'Failed to fetch CMS data';
+      
+      if (err instanceof Error) {
+        if (err.message.includes('Failed to fetch')) {
+          const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+          errorMessage = `Cannot connect to Supabase at ${supabaseUrl}. Please check:\n1. Your internet connection\n2. Supabase project is running\n3. Environment variables are correct\n4. No firewall blocking the connection`;
+        } else if (err.message.includes('Supabase configuration')) {
+          errorMessage = err.message;
+        } else if (err.message.includes('Invalid Supabase URL')) {
+          errorMessage = err.message;
+        } else {
+          errorMessage = err.message;
+        }
+      }
+      
+      setError(errorMessage);
     } finally {
       setLoading(false);
     }
