@@ -50,12 +50,9 @@ const Footer: React.FC = () => {
             <div className="space-y-2">
               <div className="flex items-center space-x-3">
                 <Mail className="h-4 w-4 text-blue-400" />
-                <a 
-                  href={`mailto:${getSetting('company_email', 'info@squiretown.co')}`}
-                  className="text-slate-300 hover:text-blue-400 transition-colors duration-200"
-                >
+                <span className="text-slate-300">
                   {getSetting('company_email', 'info@squiretown.co')}
-                </a>
+                </span>
               </div>
               <div className="flex items-center space-x-3">
                 <Phone className="h-4 w-4 text-blue-400" />
