@@ -51,7 +51,7 @@ const Footer: React.FC = () => {
               <div className="flex items-center space-x-3">
                 <Mail className="h-4 w-4 text-blue-400" />
                 <span className="text-slate-300">
-                  {getSetting('company_email', 'info@squiretownconsulting.com')}
+                  {getSetting('company_email', 'info@squiretown.co')}
                 </span>
               </div>
               <div className="flex items-center space-x-3">
