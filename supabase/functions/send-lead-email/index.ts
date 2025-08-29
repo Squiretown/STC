@@ -57,7 +57,7 @@ serve(async (req) => {
 
     // Build email payload
     const emailData = {
-      from: "notifications@support247.support", // must match your verified domain/subdomain
+      from: "notifications@support247.solutions", // must match your verified domain/subdomain
       to: [ADMIN_EMAIL],
       reply_to: record?.email ?? undefined,
       subject: `🚀 New Lead: ${record?.name ?? ""}${record?.company ? ` from ${record.company}` : ""}`,
