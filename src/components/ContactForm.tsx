@@ -159,7 +159,7 @@ const ContactForm: React.FC<ContactFormProps> = ({
             name="phone"
             inputMode="tel"
             // Accept common phone formats; keep it flexible for now
-            pattern="^[0-9()+\-.\s]{7,20}$"
+            pattern="^[0-9()+\\-\\.\\s]{7,20}$"
             title="Enter a valid phone number"
             value={formData.phone}
             onChange={handleChange}
