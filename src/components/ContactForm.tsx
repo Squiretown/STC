@@ -152,15 +152,14 @@ const ContactForm: React.FC<ContactFormProps> = ({
         <div>
           <label htmlFor="phone" className="block text-sm font-medium text-slate-700 mb-2">
             Phone
-          </label>
           <input
            type="tel"
            id="phone"
            name="phone"
            inputMode="tel"
-          pattern="[0-9()+.\\s\\-]{7,20}"
-          title="Phone number, 7–20 chars; digits, spaces, +, -, . allowed"
-  {...otherProps}
+           pattern="[0-9()+.\\s-]{7,20}"
+           title="Phone number, 7–20 chars; digits, spaces, +, -, . allowed"
+           {...otherProps}
 />
             value={formData.phone}
             onChange={handleChange}
