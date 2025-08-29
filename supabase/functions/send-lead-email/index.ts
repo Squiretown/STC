@@ -33,11 +33,11 @@ serve(async (req) => {
   }
 
   try {
-    console.log("send-lead-notification: request received", { method: req.method });
+    console.log("send-lead-email: request received", { method: req.method });
 
     // Read raw body once, then parse
     const bodyText = await req.text();
-    console.log("send-lead-notification: raw body", bodyText);
+    console.log("send-lead-email: raw body", bodyText);
     const payload = bodyText ? JSON.parse(bodyText) : {};
     const { record } = payload as { record?: any };
 
@@ -135,7 +135,7 @@ serve(async (req) => {
       { status: 200, headers: { "Content-Type": "application/json", ...corsHeaders } },
     );
   } catch (error: any) {
-    console.error("Error in send-lead-notification:", error);
+    console.error("Error in send-lead-email:", error);
     return new Response(JSON.stringify({ success: false, error: String(error?.message ?? error) }), {
       status: 500,
       headers: { "Content-Type": "application/json", ...corsHeaders },
