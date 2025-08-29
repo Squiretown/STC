@@ -1,6 +1,7 @@
+// src/components/ContactForm.tsx
 import React, { useState } from 'react';
 import { Send, CheckCircle } from 'lucide-react';
-import { supabase, type Lead } from '../lib/supabase';
+import { supabase } from '../lib/supabase'; // removed `type Lead` to avoid type mismatch during rollout
 
 interface ContactFormProps {
   className?: string;
@@ -8,14 +9,15 @@ interface ContactFormProps {
   subtitle?: string;
 }
 
-const ContactForm: React.FC<ContactFormProps> = ({ 
-  className = '', 
-  title = "Ready to Get Started?",
+const ContactForm: React.FC<ContactFormProps> = ({
+  className = '',
+  title = 'Ready to Get Started?',
   subtitle = "Let's discuss how we can help transform your business."
 }) => {
   const [formData, setFormData] = useState({
     name: '',
     email: '',
+    phone: '',          // NEW
     company: '',
     service: '',
     message: ''
@@ -24,7 +26,9 @@ const ContactForm: React.FC<ContactFormProps> = ({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
+  ) => {
     setFormData({
       ...formData,
       [e.target.name]: e.target.value
@@ -41,40 +45,41 @@ const ContactForm: React.FC<ContactFormProps> = ({
     setError(null);
 
     try {
-      // Prepare lead data
-      const leadData: Lead = {
+      // lightweight phone clean-up; store raw if not provided
+      const phoneClean = formData.phone.trim() || null;
+
+      // Build payload (no type coupling while we roll out the new column)
+      const leadData = {
         name: formData.name.trim(),
         email: formData.email.trim(),
+        phone: phoneClean,                          // NEW
         company: formData.company.trim() || null,
         service: formData.service || null,
         message: formData.message.trim()
       };
 
-      // Insert lead into Supabase
-      const { data, error: supabaseError } = await supabase
+      // Insert lead into Supabase — NO .select() (avoids SELECT RLS requirement)
+      const { error: supabaseError } = await supabase
         .from('leads')
-        .insert([leadData])
-        .select();
+        .insert([leadData]); // returning=minimal
 
       if (supabaseError) {
         console.error('Supabase error:', supabaseError);
-        throw new Error('Failed to submit your message. Please try again.');
+        throw new Error(supabaseError.message || 'Failed to submit your message. Please try again.');
       }
 
-      console.log('Lead submitted successfully:', data);
-      
       // Reset form and show success message
       setFormData({
         name: '',
         email: '',
+        phone: '',            // NEW
         company: '',
         service: '',
         message: ''
       });
-      
+
       setIsSubmitted(true);
       setTimeout(() => setIsSubmitted(false), 5000);
-
     } catch (err) {
       console.error('Form submission error:', err);
       setError(err instanceof Error ? err.message : 'An unexpected error occurred');
@@ -89,7 +94,7 @@ const ContactForm: React.FC<ContactFormProps> = ({
         <CheckCircle className="h-16 w-16 text-green-600 mx-auto mb-4" />
         <h3 className="text-xl font-semibold text-green-800 mb-2">Thank You!</h3>
         <p className="text-green-700">
-          Your message has been received successfully. We'll get back to you within 24 hours.
+          Your message has been received successfully. We&apos;ll get back to you within 24 hours.
         </p>
       </div>
     );
@@ -141,6 +146,27 @@ const ContactForm: React.FC<ContactFormProps> = ({
               placeholder="john@company.com"
             />
           </div>
+        </div>
+
+        {/* NEW: Phone field */}
+        <div>
+          <label htmlFor="phone" className="block text-sm font-medium text-slate-700 mb-2">
+            Phone
+          </label>
+          <input
+            type="tel"
+            id="phone"
+            name="phone"
+            inputMode="tel"
+            // Accept common phone formats; keep it flexible for now
+            pattern="^[0-9()+\-.\s]{7,20}$"
+            title="Enter a valid phone number"
+            value={formData.phone}
+            onChange={handleChange}
+            className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+            placeholder="+1 631 555 1234"
+          />
+          {/* If you later standardize to E.164 (+15551234567), we can tighten this. */}
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
