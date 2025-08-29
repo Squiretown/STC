@@ -1,8 +1,11 @@
 import React from 'react';
 import { Mail, Phone, MapPin, Clock } from 'lucide-react';
 import ContactForm from '../components/ContactForm';
+import { useCMS } from '../hooks/useCMS';
 
 const Contact: React.FC = () => {
+  const { getContent, getSetting } = useCMS();
+
   return (
     <div className="pt-16">
       {/* Hero Section */}
@@ -10,11 +13,10 @@ const Contact: React.FC = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center">
             <h1 className="text-5xl md:text-6xl font-bold text-slate-800 mb-8">
-              Let's Start a Conversation
+              {getContent('contact', 'hero_title', 'Let\'s Start a Conversation')}
             </h1>
             <p className="text-xl md:text-2xl text-slate-600 mb-12 max-w-4xl mx-auto">
-              Ready to transform your business? We're here to help you navigate the complexities 
-              of brand development, AI implementation, and business funding.
+              {getContent('contact', 'hero_subtitle', 'Ready to transform your business? We\'re here to help you navigate the complexities of brand development, AI implementation, and business funding.')}
             </p>
           </div>
         </div>
@@ -34,8 +36,8 @@ const Contact: React.FC = () => {
                   </div>
                   <div>
                     <h3 className="text-lg font-semibold text-slate-800 mb-2">Email Us</h3>
-                    <p className="text-slate-600">info@squiretownconsulting.com</p>
-                    <p className="text-slate-600">hello@squiretownconsulting.com</p>
+                    <p className="text-slate-600">{getSetting('company_email', 'info@squiretownconsulting.com')}</p>
+                    <p className="text-slate-600">{getSetting('contact_email_secondary', 'hello@squiretownconsulting.com')}</p>
                   </div>
                 </div>
 
@@ -45,8 +47,8 @@ const Contact: React.FC = () => {
                   </div>
                   <div>
                     <h3 className="text-lg font-semibold text-slate-800 mb-2">Call Us</h3>
-                    <p className="text-slate-600">Main: (555) 123-4567</p>
-                    <p className="text-slate-600">Direct: (555) 987-6543</p>
+                    <p className="text-slate-600">Main: {getSetting('company_phone', '(813) 326-4711')}</p>
+                    <p className="text-slate-600">Direct: {getSetting('company_phone_direct', '(555) 987-6543')}</p>
                   </div>
                 </div>
 
@@ -56,8 +58,7 @@ const Contact: React.FC = () => {
                   </div>
                   <div>
                     <h3 className="text-lg font-semibold text-slate-800 mb-2">Visit Us</h3>
-                    <p className="text-slate-600">123 Business Plaza</p>
-                    <p className="text-slate-600">New York, NY 10001</p>
+                    <p className="text-slate-600">{getSetting('company_address', '15 Monauk Hwy, Suite 112, Hampton Bays, NY 11946')}</p>
                   </div>
                 </div>
 
@@ -67,8 +68,7 @@ const Contact: React.FC = () => {
                   </div>
                   <div>
                     <h3 className="text-lg font-semibold text-slate-800 mb-2">Business Hours</h3>
-                    <p className="text-slate-600">Monday - Friday: 9:00 AM - 6:00 PM</p>
-                    <p className="text-slate-600">Saturday: 10:00 AM - 4:00 PM</p>
+                    <p className="text-slate-600">{getSetting('business_hours', 'Monday - Friday: 9:00 AM - 6:00 PM, Saturday: 10:00 AM - 4:00 PM')}</p>
                   </div>
                 </div>
               </div>
@@ -87,8 +87,8 @@ const Contact: React.FC = () => {
             <div className="lg:col-span-3">
               <ContactForm 
                 className="shadow-xl"
-                title="Send us a Message"
-                subtitle="Fill out the form below and we'll get back to you as soon as possible."
+                title={getContent('contact', 'form_title', 'Send us a Message')}
+                subtitle={getContent('contact', 'form_subtitle', 'Fill out the form below and we\'ll get back to you as soon as possible.')}
               />
             </div>
           </div>

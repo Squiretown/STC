@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Menu, X, Building2 } from 'lucide-react';
+import { useCMS } from '../hooks/useCMS';
 
 const Navbar: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const location = useLocation();
+  const { getSetting } = useCMS();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -16,10 +18,10 @@ const Navbar: React.FC = () => {
   }, []);
 
   const navItems = [
-    { name: 'Home', path: '/' },
     { name: 'Brand & Marketing', path: '/brand-marketing' },
     { name: 'AI Technology', path: '/ai-technology' },
     { name: 'Business Funding', path: '/business-funding' },
+    { name: 'Title Services', path: '/real-estate-title-services' },
     { name: 'About', path: '/about' },
     { name: 'Contact', path: '/contact' },
   ];
@@ -31,8 +33,29 @@ const Navbar: React.FC = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           <Link to="/" className="flex items-center space-x-2">
-            <Building2 className="h-8 w-8 text-blue-600" />
-            <span className="text-xl font-bold text-slate-800">Squiretown Consulting</span>
+            {getSetting('header_logo_url') ? (
+              <img 
+                src={getSetting('header_logo_url')} 
+                alt={getSetting('company_name', 'Squiretown Consulting')}
+                className="flex-shrink-0"
+                style={{
+                  width: `${getSetting('header_logo_width', '120')}px`,
+                  height: `${getSetting('header_logo_height', '48')}px`,
+                  objectFit: 'contain',
+                  display: 'block'
+                }}
+                onError={(e) => {
+                  // Fallback to icon if image fails to load
+                  const target = e.target as HTMLImageElement;
+                  target.style.display = 'none';
+                  target.nextElementSibling?.classList.remove('hidden');
+                }}
+              />
+            ) : null}
+            <Building2 className={`h-8 w-8 text-blue-600 ${getSetting('header_logo_url') ? 'hidden' : ''}`} />
+            <span className="text-xl font-bold text-slate-800">
+              {getSetting('company_name', 'Squiretown Consulting')}
+            </span>
           </Link>
 
           {/* Desktop Navigation */}

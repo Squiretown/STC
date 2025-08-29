@@ -1,9 +1,57 @@
 import React from 'react';
-import { Users, Mail, Calendar, TrendingUp } from 'lucide-react';
+import { Users, Mail, Calendar, TrendingUp, Edit, Eye } from 'lucide-react';
 import { useLeads } from '../hooks/useLeads';
+import LeadEditModal from '../components/LeadEditModal';
+import type { Lead } from '../lib/supabase';
 
 const AdminDashboard: React.FC = () => {
-  const { leads, loading, error } = useLeads();
+  const { leads, loading, error, updateLead, deleteLead, refetch } = useLeads();
+  const [selectedLead, setSelectedLead] = React.useState<Lead | null>(null);
+  const [isEditModalOpen, setIsEditModalOpen] = React.useState(false);
+
+  // Status color mapping
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case 'New':
+        return 'bg-blue-100 text-blue-800';
+      case 'Contacted':
+        return 'bg-yellow-100 text-yellow-800';
+      case 'Qualified':
+        return 'bg-purple-100 text-purple-800';
+      case 'Converted':
+        return 'bg-green-100 text-green-800';
+      case 'Lost':
+        return 'bg-red-100 text-red-800';
+      default:
+        return 'bg-slate-100 text-slate-800';
+    }
+  };
+
+  const handleEditLead = (lead: Lead) => {
+    setSelectedLead(lead);
+    setIsEditModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setSelectedLead(null);
+    setIsEditModalOpen(false);
+  };
+
+  const handleSaveLead = async (leadId: string, updates: Partial<Lead>) => {
+    const success = await updateLead(leadId, updates);
+    if (success) {
+      await refetch(); // Refresh the leads list
+    }
+    return success;
+  };
+
+  const handleDeleteLead = async (leadId: string) => {
+    const success = await deleteLead(leadId);
+    if (success) {
+      await refetch(); // Refresh the leads list
+    }
+    return success;
+  };
 
   if (loading) {
     return (
@@ -42,6 +90,13 @@ const AdminDashboard: React.FC = () => {
     return acc;
   }, {} as Record<string, number>);
 
+  // Status distribution stats
+  const statusStats = leads.reduce((acc, lead) => {
+    const status = lead.status || 'New';
+    acc[status] = (acc[status] || 0) + 1;
+    return acc;
+  }, {} as Record<string, number>);
+
   const formatDate = (dateString: string | undefined) => {
     if (!dateString) return 'N/A';
     return new Date(dateString).toLocaleDateString('en-US', {
@@ -54,6 +109,7 @@ const AdminDashboard: React.FC = () => {
   };
 
   return (
+    <>
     <div className="pt-16 min-h-screen bg-slate-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         {/* Header */}
@@ -63,7 +119,7 @@ const AdminDashboard: React.FC = () => {
         </div>
 
         {/* Stats Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+        <div className="grid grid-cols-1 md:grid-cols-5 gap-6 mb-8">
           <div className="bg-white rounded-xl p-6 shadow-lg">
             <div className="flex items-center">
               <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mr-4">
@@ -90,6 +146,30 @@ const AdminDashboard: React.FC = () => {
 
           <div className="bg-white rounded-xl p-6 shadow-lg">
             <div className="flex items-center">
+              <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mr-4">
+                <Eye className="h-6 w-6 text-blue-600" />
+              </div>
+              <div>
+                <p className="text-sm font-medium text-slate-600">New Leads</p>
+                <p className="text-2xl font-bold text-slate-800">{statusStats['New'] || 0}</p>
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-white rounded-xl p-6 shadow-lg">
+            <div className="flex items-center">
+              <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center mr-4">
+                <TrendingUp className="h-6 w-6 text-green-600" />
+              </div>
+              <div>
+                <p className="text-sm font-medium text-slate-600">Converted</p>
+                <p className="text-2xl font-bold text-slate-800">{statusStats['Converted'] || 0}</p>
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-white rounded-xl p-6 shadow-lg">
+            <div className="flex items-center">
               <div className="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center mr-4">
                 <Mail className="h-6 w-6 text-purple-600" />
               </div>
@@ -103,26 +183,12 @@ const AdminDashboard: React.FC = () => {
               </div>
             </div>
           </div>
-
-          <div className="bg-white rounded-xl p-6 shadow-lg">
-            <div className="flex items-center">
-              <div className="w-12 h-12 bg-orange-100 rounded-lg flex items-center justify-center mr-4">
-                <Calendar className="h-6 w-6 text-orange-600" />
-              </div>
-              <div>
-                <p className="text-sm font-medium text-slate-600">Latest Lead</p>
-                <p className="text-sm font-bold text-slate-800">
-                  {leads.length > 0 ? formatDate(leads[0].created_at).split(' ')[0] : 'N/A'}
-                </p>
-              </div>
-            </div>
-          </div>
         </div>
 
         {/* Leads Table */}
         <div className="bg-white rounded-xl shadow-lg overflow-hidden">
           <div className="px-6 py-4 border-b border-slate-200">
-            <h2 className="text-xl font-semibold text-slate-800">Recent Leads</h2>
+            <h2 className="text-xl font-semibold text-slate-800">All Leads</h2>
           </div>
           
           <div className="overflow-x-auto">
@@ -132,9 +198,12 @@ const AdminDashboard: React.FC = () => {
                   <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">Name</th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">Email</th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">Company</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">Status</th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">Service</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">Assigned</th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">Date</th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">Message</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">Actions</th>
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-slate-200">
@@ -151,10 +220,18 @@ const AdminDashboard: React.FC = () => {
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-600">
                       {lead.company || 'Not specified'}
                     </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <span className={`px-2 py-1 text-xs font-semibold rounded-full ${getStatusColor(lead.status || 'New')}`}>
+                        {lead.status || 'New'}
+                      </span>
+                    </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-600">
-                      <span className="px-2 py-1 text-xs font-semibold rounded-full bg-blue-100 text-blue-800">
+                      <span className="px-2 py-1 text-xs font-semibold rounded-full bg-slate-100 text-slate-800">
                         {lead.service || 'General'}
                       </span>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-600">
+                      {lead.assigned_to || 'Unassigned'}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-600">
                       {formatDate(lead.created_at)}
@@ -163,6 +240,15 @@ const AdminDashboard: React.FC = () => {
                       <p className="truncate" title={lead.message}>
                         {lead.message}
                       </p>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                      <button
+                        onClick={() => handleEditLead(lead)}
+                        className="text-blue-600 hover:text-blue-900 transition-colors duration-200"
+                        title="Edit lead"
+                      >
+                        <Edit className="h-4 w-4" />
+                      </button>
                     </td>
                   </tr>
                 ))}
@@ -179,6 +265,16 @@ const AdminDashboard: React.FC = () => {
         </div>
       </div>
     </div>
+
+    {/* Lead Edit Modal */}
+    <LeadEditModal
+      lead={selectedLead}
+      isOpen={isEditModalOpen}
+      onSave={handleSaveLead}
+      onDelete={handleDeleteLead}
+      onClose={handleCloseModal}
+    />
+    </>
   );
 };
 
