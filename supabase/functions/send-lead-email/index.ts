@@ -1,336 +1,136 @@
-import { serve } from "https://deno.land/std@0.177.0/http/server.ts";
+// supabase/functions/send-lead-notification/index.ts
+import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 
-interface Lead {
-  id?: string;
-  name: string;
-  email: string;
-  company?: string;
-  service?: string;
-  message: string;
-  created_at?: string;
-}
+// Env secrets (set these via `supabase secrets set ...`)
+const RESEND_API_KEY = Deno.env.get("RESEND_API_KEY");
+const ADMIN_EMAIL = Deno.env.get("ADMIN_EMAIL"); // e.g. info@squiretown.co
 
 const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
+};
+
+const getServiceName = (serviceKey?: string | null) => {
+  const map: Record<string, string> = {
+    "brand-marketing": "Brand Awareness & Marketing",
+    "ai-technology": "AI Technology Stack Building",
+    "business-funding": "Business Funding",
+    "title-services": "Real Estate Title Services",
+    multiple: "Multiple Services",
+    consultation: "General Consultation",
+  };
+  return serviceKey ? map[serviceKey] ?? serviceKey : "Not specified";
 };
 
 serve(async (req) => {
-  console.log('send-lead-email function called', { method: req.method, url: req.url });
-  
-  // Handle CORS preflight requests
-  if (req.method === 'OPTIONS') {
-    return new Response('ok', { headers: corsHeaders });
+  // CORS preflight
+  if (req.method === "OPTIONS") {
+    return new Response("ok", { headers: corsHeaders });
+  }
+  // Only POST accepted
+  if (req.method !== "POST") {
+    return new Response("Method not allowed", { status: 405, headers: corsHeaders });
   }
 
   try {
-    // Get environment variables
-    const resendApiKey = Deno.env.get('RESEND_API_KEY');
-    const adminEmail = Deno.env.get('ADMIN_EMAIL');
-    const fromEmail = Deno.env.get('FROM_EMAIL') || 'notifications@support247.solutions';
+    console.log("send-lead-notification: request received", { method: req.method });
 
-    if (!resendApiKey) {
-      console.error('RESEND_API_KEY environment variable is not set');
-      return new Response(
-        JSON.stringify({ error: 'Server configuration error' }),
-        {
-          status: 500,
-          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-        }
-      );
-    }
+    // Read raw body once, then parse
+    const bodyText = await req.text();
+    console.log("send-lead-notification: raw body", bodyText);
+    const payload = bodyText ? JSON.parse(bodyText) : {};
+    const { record } = payload as { record?: any };
 
-    if (!adminEmail) {
-      console.error('ADMIN_EMAIL environment variable is not set');
-      return new Response(
-        JSON.stringify({ error: 'Admin email not configured' }),
-        {
-          status: 500,
-          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-        }
-      );
-    }
+    if (!RESEND_API_KEY) throw new Error("RESEND_API_KEY not configured");
+    if (!ADMIN_EMAIL) throw new Error("ADMIN_EMAIL not configured");
 
-    // Parse the request body
-    const requestBody = await req.json();
-    const lead: Lead = requestBody.record || requestBody;
-
-    if (!lead || !lead.name || !lead.email || !lead.message) {
-      console.error('Invalid lead data received:', lead);
-      return new Response(
-        JSON.stringify({ error: 'Invalid lead data' }),
-        {
-          status: 400,
-          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-        }
-      );
-    }
-
-    // Dynamic import of Resend to avoid import issues
-    const { Resend } = await import('npm:resend@3.2.0');
-
-    // Initialize Resend
-    const resend = new Resend(resendApiKey);
-
-    // Format the submission date
-    const submissionDate = lead.created_at 
-      ? new Date(lead.created_at).toLocaleString('en-US', {
-          weekday: 'long',
-          year: 'numeric',
-          month: 'long',
-          day: 'numeric',
-          hour: '2-digit',
-          minute: '2-digit',
-          timeZoneName: 'short'
-        })
-      : new Date().toLocaleString('en-US', {
-          weekday: 'long',
-          year: 'numeric',
-          month: 'long',
-          day: 'numeric',
-          hour: '2-digit',
-          minute: '2-digit',
-          timeZoneName: 'short'
-        });
-
-    // Create service display name
-    const serviceMap: Record<string, string> = {
-      'brand-marketing': 'Brand Awareness & Marketing',
-      'ai-technology': 'AI Technology Stack Building',
-      'business-funding': 'Business Funding',
-      'title-services': 'Real Estate Title Services',
-      'multiple': 'Multiple Services',
-      'consultation': 'General Consultation'
-    };
-
-    const serviceDisplay = lead.service ? serviceMap[lead.service] || lead.service : 'Not specified';
-    
-    // Email subject
-    const subject = lead.service ? `New Lead Inquiry - ${serviceDisplay}` : 'New Lead Inquiry';
-
-    // Create HTML email template
-    const htmlContent = `
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>New Lead Notification</title>
-    <style>
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            line-height: 1.6;
-            color: #333;
-            max-width: 600px;
-            margin: 0 auto;
-            padding: 20px;
-            background-color: #f8f9fa;
-        }
-        .container {
-            background-color: #ffffff;
-            border-radius: 10px;
-            padding: 30px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-        }
-        .header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 20px;
-            border-radius: 8px;
-            margin-bottom: 25px;
-            text-align: center;
-        }
-        .header h1 {
-            margin: 0;
-            font-size: 24px;
-        }
-        .lead-details {
-            background-color: #f8f9fa;
-            border-radius: 8px;
-            padding: 20px;
-            margin: 20px 0;
-        }
-        .detail-row {
-            display: flex;
-            margin-bottom: 15px;
-            border-bottom: 1px solid #e9ecef;
-            padding-bottom: 10px;
-        }
-        .detail-row:last-child {
-            border-bottom: none;
-            margin-bottom: 0;
-        }
-        .detail-label {
-            font-weight: bold;
-            color: #495057;
-            width: 140px;
-            flex-shrink: 0;
-        }
-        .detail-value {
-            color: #212529;
-            flex-grow: 1;
-        }
-        .message-content {
-            background-color: #ffffff;
-            border: 2px solid #e9ecef;
-            border-radius: 6px;
-            padding: 15px;
-            white-space: pre-wrap;
-            font-family: inherit;
-        }
-        .footer {
-            margin-top: 30px;
-            text-align: center;
-            color: #6c757d;
-            font-size: 14px;
-        }
-        .cta-button {
-            display: inline-block;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white !important;
-            padding: 12px 25px;
-            text-decoration: none;
-            border-radius: 6px;
-            margin: 20px 0;
-            font-weight: bold;
-        }
-        @media only screen and (max-width: 600px) {
-            .detail-row {
-                flex-direction: column;
-            }
-            .detail-label {
-                width: auto;
-                margin-bottom: 5px;
-            }
-        }
-    </style>
-</head>
-<body>
-    <div class="container">
-        <div class="header">
-            <h1>🎯 New Lead Received</h1>
-            <p style="margin: 10px 0 0 0;">Squiretown Consulting LLC</p>
-        </div>
-        
-        <p>You have received a new inquiry through your website contact form. Here are the details:</p>
-        
-        <div class="lead-details">
-            <div class="detail-row">
-                <span class="detail-label">Name:</span>
-                <span class="detail-value">${lead.name}</span>
-            </div>
-            <div class="detail-row">
-                <span class="detail-label">Email:</span>
-                <span class="detail-value"><a href="mailto:${lead.email}" style="color: #667eea; text-decoration: none;">${lead.email}</a></span>
-            </div>
-            <div class="detail-row">
-                <span class="detail-label">Company:</span>
-                <span class="detail-value">${lead.company || 'Not provided'}</span>
-            </div>
-            <div class="detail-row">
-                <span class="detail-label">Service Interest:</span>
-                <span class="detail-value">${serviceDisplay}</span>
-            </div>
-            <div class="detail-row">
-                <span class="detail-label">Submitted:</span>
-                <span class="detail-value">${submissionDate}</span>
-            </div>
-        </div>
-        
-        <div style="margin: 25px 0;">
-            <div class="detail-label" style="margin-bottom: 10px;">Message:</div>
-            <div class="message-content">${lead.message}</div>
-        </div>
-        
-        <div style="text-align: center; margin: 30px 0;">
-            <a href="mailto:${lead.email}?subject=Re: Your Inquiry - Squiretown Consulting" class="cta-button">Reply to ${lead.name}</a>
-        </div>
-        
-        <div class="footer">
-            <p>This notification was automatically generated from your website's contact form.</p>
-            <p><strong>Squiretown Consulting LLC</strong><br>
-            Professional Business Consulting Services</p>
-        </div>
-    </div>
-</body>
-</html>`;
-
-    // Create plain text version
-    const textContent = `
-NEW LEAD INQUIRY - SQUIRETOWN CONSULTING
-
-A new inquiry has been submitted through your website contact form.
-
-LEAD DETAILS:
-==============
-Name: ${lead.name}
-Email: ${lead.email}
-Company: ${lead.company || 'Not provided'}
-Service Interest: ${serviceDisplay}
-Submitted: ${submissionDate}
-
-MESSAGE:
-========
-${lead.message}
-
----
-You can reply directly to this lead at: ${lead.email}
-
-This notification was automatically generated from your website's contact form.
-Squiretown Consulting LLC
-`;
-
-    // Send email using Resend
-    console.log(`Sending email notification for lead: ${lead.name} (${lead.email})`);
-    
-    const { data, error } = await resend.emails.send({
-      from: fromEmail,
-      to: adminEmail,
-      subject: subject,
-      html: htmlContent,
-      text: textContent,
+    // Format timestamp (NY time)
+    const submittedDate = new Date(record?.created_at ?? Date.now()).toLocaleString("en-US", {
+      timeZone: "America/New_York",
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+      hour: "numeric",
+      minute: "2-digit",
+      hour12: true,
     });
 
-    if (error) {
-      console.error('Failed to send email:', error);
-      return new Response(
-        JSON.stringify({ 
-          error: 'Failed to send email notification', 
-          details: error 
-        }),
-        {
-          status: 500,
-          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-        }
-      );
-    }
+    // Build email payload
+    const emailData = {
+      from: "notifications@support247.support", // must match your verified domain/subdomain
+      to: [ADMIN_EMAIL],
+      reply_to: record?.email ?? undefined,
+      subject: `🚀 New Lead: ${record?.name ?? ""}${record?.company ? ` from ${record.company}` : ""}`,
+      html: `
+<!DOCTYPE html>
+<html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+  body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Arial,sans-serif;line-height:1.6;color:#333;margin:0;padding:0;background:#f5f5f5}
+  .container{max-width:600px;margin:20px auto;background:#fff;border-radius:12px;overflow:hidden;box-shadow:0 4px 6px rgba(0,0,0,.1)}
+  .header{background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);color:#fff;padding:30px;text-align:center}
+  .header h1{margin:0 0 10px 0;font-size:24px}
+  .content{padding:30px}
+  .field{margin-bottom:20px;padding:18px;background:#f8fafc;border-radius:8px;border-left:4px solid #667eea}
+  .field-label{font-weight:bold;color:#4a5568;margin-bottom:8px;font-size:14px;text-transform:uppercase;letter-spacing:.5px}
+  .message-field{margin-top:25px;padding:20px;background:#f8fafc;border-radius:8px;border:1px solid #e2e8f0}
+  .message-content{white-space:pre-wrap;margin-top:10px;line-height:1.6;font-size:15px}
+  .cta-section{text-align:center;margin:30px 0;padding:20px;background:#f0f4f8;border-radius:8px}
+  .cta-button{display:inline-block;padding:14px 28px;background:#667eea;color:#fff;text-decoration:none;border-radius:6px;font-weight:600}
+  .footer{padding:25px;background:#2d3748;color:#fff;text-align:center;font-size:14px}
+  .lead-id{font-family:'Courier New',monospace;background:rgba(255,255,255,.1);padding:2px 6px;border-radius:4px}
+</style></head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>🎉 New Lead from Squiretown Consulting</h1>
+      <p>A potential client has reached out through your website!</p>
+    </div>
+    <div class="content">
+      <div class="field"><div class="field-label">👤 Contact Name</div><div>${record?.name ?? ""}</div></div>
+      <div class="field"><div class="field-label">📧 Email Address</div><div><a href="mailto:${record?.email ?? ""}">${record?.email ?? ""}</a></div></div>
+      ${record?.company ? `<div class="field"><div class="field-label">🏢 Company</div><div>${record.company}</div></div>` : ""}
+      <div class="field"><div class="field-label">🎯 Service Interest</div><div>${getServiceName(record?.service)}</div></div>
+      <div class="field"><div class="field-label">⏰ Submitted</div><div>${submittedDate} EST</div></div>
+      <div class="message-field"><div class="field-label">💬 Message</div><div class="message-content">${record?.message ?? ""}</div></div>
+      <div class="cta-section">
+        <a href="mailto:${record?.email ?? ""}?subject=Re: Your inquiry about ${getServiceName(record?.service)}" class="cta-button" style="margin-right:10px;">Reply to Lead</a>
+        <a href="https://squiretown.co/admin" class="cta-button">View in Dashboard</a>
+      </div>
+    </div>
+    <div class="footer">
+      <p><strong>Squiretown Consulting</strong></p>
+      <p>Lead ID: <span class="lead-id">${record?.id ?? "New submission"}</span></p>
+      <p style="opacity:.8;">This email was automatically generated from your contact form.</p>
+    </div>
+  </div>
+</body></html>`,
+    };
 
-    console.log('Email sent successfully:', data);
+    // Send via Resend
+    const res = await fetch("https://api.resend.com/emails", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${RESEND_API_KEY}`,
+      },
+      body: JSON.stringify(emailData),
+    });
+
+    console.log("Resend status", res.status);
+    const respBody = await res.text();
+    console.log("Resend body", respBody);
+
+    if (!res.ok) throw new Error(`Resend API error: ${res.status} - ${respBody}`);
 
     return new Response(
-      JSON.stringify({ 
-        success: true, 
-        message: 'Email notification sent successfully',
-        data: data
-      }),
-      {
-        status: 200,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      }
+      JSON.stringify({ success: true, message: "Email notification sent successfully" }),
+      { status: 200, headers: { "Content-Type": "application/json", ...corsHeaders } },
     );
-
-  } catch (error) {
-    console.error('Error in send-lead-email function:', error);
-    
-    return new Response(
-      JSON.stringify({ 
-        error: 'Internal server error', 
-        details: error instanceof Error ? error.message : 'Unknown error' 
-      }),
-      {
-        status: 500,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      }
-    );
+  } catch (error: any) {
+    console.error("Error in send-lead-notification:", error);
+    return new Response(JSON.stringify({ success: false, error: String(error?.message ?? error) }), {
+      status: 500,
+      headers: { "Content-Type": "application/json", ...corsHeaders },
+    });
   }
 });
