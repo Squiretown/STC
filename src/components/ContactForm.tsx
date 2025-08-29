@@ -160,11 +160,10 @@ const ContactForm: React.FC<ContactFormProps> = ({
            inputMode="tel"
            pattern="[0-9()+.\\s-]{7,20}"
            title="Phone number, 7–20 chars; digits, spaces, +, -, . allowed"
-           {...otherProps}/>
            value={formData.phone}
            onChange={handleChange}
            className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
-            placeholder="+1 631 555 1234"
+           placeholder="+1 631 555 1234"
           />
           {/* If you later standardize to E.164 (+15551234567), we can tighten this. */}
         </div>
