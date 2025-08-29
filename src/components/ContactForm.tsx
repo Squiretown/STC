@@ -152,6 +152,7 @@ const ContactForm: React.FC<ContactFormProps> = ({
         <div>
           <label htmlFor="phone" className="block text-sm font-medium text-slate-700 mb-2">
             Phone
+           </label>
           <input
            type="tel"
            id="phone"
