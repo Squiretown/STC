@@ -107,6 +107,10 @@ serve(async (req) => {
     };
 
     // Send via Resend
+    // Create AbortController with timeout to prevent hanging database transactions
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout
+
     const res = await fetch("https://api.resend.com/emails", {
       method: "POST",
       headers: {
@@ -114,7 +118,11 @@ serve(async (req) => {
         Authorization: `Bearer ${RESEND_API_KEY}`,
       },
       body: JSON.stringify(emailData),
+      signal: controller.signal,
     });
+
+    // Clear the timeout if request completes successfully
+    clearTimeout(timeoutId);
 
     console.log("Resend status", res.status);
     const respBody = await res.text();
