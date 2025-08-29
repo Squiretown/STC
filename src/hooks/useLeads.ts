@@ -28,56 +28,6 @@ export const useLeads = () => {
     }
   };
 
-  // Update a lead
-  const updateLead = async (leadId: string, updates: Partial<Lead>) => {
-    try {
-      const { error: supabaseError } = await supabase
-        .from('leads')
-        .update(updates)
-        .eq('id', leadId);
-
-      if (supabaseError) {
-        throw supabaseError;
-      }
-
-      // Update local state
-      setLeads(prevLeads => 
-        prevLeads.map(lead => 
-          lead.id === leadId ? { ...lead, ...updates } : lead
-        )
-      );
-
-      return true;
-    } catch (err) {
-      console.error('Error updating lead:', err);
-      setError(err instanceof Error ? err.message : 'Failed to update lead');
-      return false;
-    }
-  };
-
-  // Delete a lead
-  const deleteLead = async (leadId: string) => {
-    try {
-      const { error: supabaseError } = await supabase
-        .from('leads')
-        .delete()
-        .eq('id', leadId);
-
-      if (supabaseError) {
-        throw supabaseError;
-      }
-
-      // Update local state
-      setLeads(prevLeads => prevLeads.filter(lead => lead.id !== leadId));
-
-      return true;
-    } catch (err) {
-      console.error('Error deleting lead:', err);
-      setError(err instanceof Error ? err.message : 'Failed to delete lead');
-      return false;
-    }
-  };
-
   // Subscribe to real-time changes
   useEffect(() => {
     fetchLeads();
@@ -107,8 +57,6 @@ export const useLeads = () => {
     leads,
     loading,
     error,
-    updateLead,
-    deleteLead,
     refetch: fetchLeads
   };
 };

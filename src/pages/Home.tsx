@@ -1,12 +1,9 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowRight, Palette, Bot, Building, Home as HomeIcon, CheckCircle, Users, Award, TrendingUp } from 'lucide-react';
+import { ArrowRight, Palette, Bot, Building, CheckCircle, Users, Award, TrendingUp } from 'lucide-react';
 import ContactForm from '../components/ContactForm';
-import { useCMS } from '../hooks/useCMS';
 
 const Home: React.FC = () => {
-  const { getContent, getSetting } = useCMS();
-
   return (
     <div className="pt-16">
       {/* Hero Section */}
@@ -14,26 +11,27 @@ const Home: React.FC = () => {
         <div className="absolute inset-0 bg-black/20"></div>
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center">
-            <h1 className="text-5xl md:text-7xl font-bold mb-8 leading-tight" 
-                dangerouslySetInnerHTML={{ 
-                  __html: getContent('home', 'hero_title', 'Transform Your Business with<span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-yellow-400"> Expert Consulting</span>') 
-                }} />
+            <h1 className="text-5xl md:text-7xl font-bold mb-8 leading-tight">
+              Transform Your Business with
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-yellow-400"> Expert Consulting</span>
+            </h1>
             <p className="text-xl md:text-2xl text-slate-300 mb-12 max-w-4xl mx-auto leading-relaxed">
-              {getContent('home', 'hero_subtitle', 'We blend creative branding, cutting-edge AI solutions, and business funding expertise to drive your business forward in today\'s competitive landscape.')}
+              We blend creative branding, cutting-edge AI solutions, and business funding expertise 
+              to drive your business forward in today's competitive landscape.
             </p>
             <div className="flex flex-col sm:flex-row gap-6 justify-center">
               <Link
                 to="/contact"
                 className="bg-blue-600 text-white px-8 py-4 rounded-lg text-lg font-semibold hover:bg-blue-700 transition-all duration-200 inline-flex items-center justify-center group"
               >
-                {getSetting('hero_cta_primary', 'Get Started Today')}
+                Get Started Today
                 <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform duration-200" />
               </Link>
               <Link
                 to="/about"
                 className="border-2 border-white text-white px-8 py-4 rounded-lg text-lg font-semibold hover:bg-white hover:text-slate-900 transition-all duration-200 inline-flex items-center justify-center"
               >
-                {getSetting('hero_cta_secondary', 'Learn More')}
+                Learn More
               </Link>
             </div>
           </div>
@@ -45,14 +43,15 @@ const Home: React.FC = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <h2 className="text-4xl md:text-5xl font-bold text-slate-800 mb-6">
-              {getContent('home', 'services_title', 'Our Core Services')}
+              Our Core Services
             </h2>
             <p className="text-xl text-slate-600 max-w-3xl mx-auto">
-              {getContent('home', 'services_subtitle', 'We offer comprehensive solutions across three key business verticals, each designed to accelerate your growth and success.')}
+              We offer comprehensive solutions across three key business verticals, 
+              each designed to accelerate your growth and success.
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-12">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 lg:gap-12">
             {/* Brand & Marketing */}
             <div className="bg-white rounded-2xl p-8 shadow-lg hover:shadow-xl transition-all duration-300 group">
               <div className="w-16 h-16 bg-gradient-to-br from-purple-500 to-pink-600 rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
@@ -146,39 +145,6 @@ const Home: React.FC = () => {
               <Link
                 to="/business-funding"
                 className="inline-flex items-center text-green-600 font-semibold hover:text-green-700 transition-colors duration-200"
-              >
-                Learn More
-                <ArrowRight className="ml-2 h-5 w-5" />
-              </Link>
-            </div>
-
-            {/* Real Estate Title Services */}
-            <div className="bg-white rounded-2xl p-8 shadow-lg hover:shadow-xl transition-all duration-300 group">
-              <div className="w-16 h-16 bg-gradient-to-br from-orange-500 to-amber-600 rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
-                <HomeIcon className="h-8 w-8 text-white" />
-              </div>
-              <h3 className="text-2xl font-bold text-slate-800 mb-4">Real Estate Title Services</h3>
-              <p className="text-slate-600 mb-6 leading-relaxed">
-                Comprehensive title examination, insurance, and closing services to ensure 
-                smooth and secure real estate transactions.
-              </p>
-              <ul className="space-y-2 mb-8">
-                <li className="flex items-center text-slate-600">
-                  <CheckCircle className="h-5 w-5 text-green-500 mr-3" />
-                  Title Searches & Examination
-                </li>
-                <li className="flex items-center text-slate-600">
-                  <CheckCircle className="h-5 w-5 text-green-500 mr-3" />
-                  Title Insurance Policies
-                </li>
-                <li className="flex items-center text-slate-600">
-                  <CheckCircle className="h-5 w-5 text-green-500 mr-3" />
-                  Closing Coordination
-                </li>
-              </ul>
-              <Link
-                to="/real-estate-title-services"
-                className="inline-flex items-center text-orange-600 font-semibold hover:text-orange-700 transition-colors duration-200"
               >
                 Learn More
                 <ArrowRight className="ml-2 h-5 w-5" />

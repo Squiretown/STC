@@ -1,11 +1,8 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Users, Target, Award, TrendingUp, CheckCircle, ArrowRight } from 'lucide-react';
-import { useCMS } from '../hooks/useCMS';
 
 const About: React.FC = () => {
-  const { getContent, getSetting } = useCMS();
-
   return (
     <div className="pt-16">
       {/* Hero Section */}
@@ -13,10 +10,11 @@ const About: React.FC = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center">
             <h1 className="text-5xl md:text-6xl font-bold text-slate-800 mb-8">
-              {getContent('about', 'hero_title', 'About Squiretown Consulting')}
+              About Squiretown Consulting
             </h1>
             <p className="text-xl md:text-2xl text-slate-600 mb-12 max-w-4xl mx-auto">
-              {getContent('about', 'hero_subtitle', 'We\'re a multi-disciplinary consulting firm that combines creative branding, cutting-edge AI technology, and business funding expertise to drive business success.')}
+              We're a multi-disciplinary consulting firm that combines creative branding, 
+              cutting-edge AI technology, and business funding expertise to drive business success.
             </p>
           </div>
         </div>
@@ -27,11 +25,12 @@ const About: React.FC = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
             <div>
-              <h2 className="text-4xl font-bold text-slate-800 mb-8">
-                {getContent('about', 'mission_title', 'Our Mission')}
-              </h2>
+              <h2 className="text-4xl font-bold text-slate-800 mb-8">Our Mission</h2>
               <p className="text-lg text-slate-600 mb-8 leading-relaxed">
-                {getContent('about', 'mission_content', 'At Squiretown Consulting, we believe that successful businesses require a perfect blend of compelling brand identity, innovative technology solutions, and strategic financial positioning. Our mission is to empower organizations by providing integrated consulting services that transform ideas into measurable results.')}
+                At Squiretown Consulting, we believe that successful businesses require a perfect blend 
+                of compelling brand identity, innovative technology solutions, and strategic financial positioning. 
+                Our mission is to empower organizations by providing integrated consulting services that 
+                transform ideas into measurable results.
               </p>
               
               <div className="space-y-6">

@@ -174,7 +174,6 @@ const ContactForm: React.FC<ContactFormProps> = ({
               <option value="brand-marketing">Brand Awareness & Marketing</option>
               <option value="ai-technology">AI Technology Stack Building</option>
               <option value="business-funding">Business Funding</option>
-              <option value="title-services">Real Estate Title Services</option>
               <option value="multiple">Multiple Services</option>
               <option value="consultation">General Consultation</option>
             </select>
