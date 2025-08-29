@@ -33,16 +33,27 @@ serve(async (req) => {
   }
 
   try {
-    console.log("send-lead-email: request received", { method: req.method });
+    console.log("send-lead-email: request received", { 
+      method: req.method, 
+      headers: Object.fromEntries(req.headers.entries()),
+      url: req.url 
+    });
 
     // Read raw body once, then parse
     const bodyText = await req.text();
-    console.log("send-lead-email: raw body", bodyText);
+    console.log("send-lead-email: raw body", { bodyText, length: bodyText.length });
     const payload = bodyText ? JSON.parse(bodyText) : {};
     const { record } = payload as { record?: any };
+    
+    console.log("send-lead-email: parsed record", record);
 
     if (!RESEND_API_KEY) throw new Error("RESEND_API_KEY not configured");
     if (!ADMIN_EMAIL) throw new Error("ADMIN_EMAIL not configured");
+    
+    console.log("send-lead-email: environment check passed", { 
+      hasResendKey: !!RESEND_API_KEY, 
+      adminEmail: ADMIN_EMAIL 
+    });
 
     // Format timestamp (NY time)
     const submittedDate = new Date(record?.created_at ?? Date.now()).toLocaleString("en-US", {
@@ -124,18 +135,27 @@ serve(async (req) => {
     // Clear the timeout if request completes successfully
     clearTimeout(timeoutId);
 
-    console.log("Resend status", res.status);
+    console.log("send-lead-email: Resend API response", { 
+      status: res.status, 
+      statusText: res.statusText 
+    });
     const respBody = await res.text();
-    console.log("Resend body", respBody);
+    console.log("send-lead-email: Resend response body", respBody);
 
     if (!res.ok) throw new Error(`Resend API error: ${res.status} - ${respBody}`);
+    
+    console.log("send-lead-email: Email sent successfully");
 
     return new Response(
       JSON.stringify({ success: true, message: "Email notification sent successfully" }),
       { status: 200, headers: { "Content-Type": "application/json", ...corsHeaders } },
     );
   } catch (error: any) {
-    console.error("Error in send-lead-email:", error);
+    console.error("send-lead-email: Error occurred", { 
+      error: error.message, 
+      stack: error.stack,
+      type: error.constructor.name 
+    });
     return new Response(JSON.stringify({ success: false, error: String(error?.message ?? error) }), {
       status: 500,
       headers: { "Content-Type": "application/json", ...corsHeaders },
