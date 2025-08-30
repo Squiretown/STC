@@ -61,8 +61,7 @@ const ContactForm: React.FC<ContactFormProps> = ({
       // Insert lead into Supabase — NO .select() (avoids SELECT RLS requirement)
       const { error: supabaseError } = await supabase
         .from('leads')
-        .insert([leadData])
-        .select('id'); // Only select id to minimize return data
+        .insert([leadData]); // returning=minimal
 
       if (supabaseError) {
         console.error('Supabase error:', supabaseError);

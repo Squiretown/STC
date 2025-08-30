@@ -14,13 +14,9 @@ export interface Lead {
   id?: string;
   name: string;
   email: string;
-  phone?: string;
   company?: string;
   service?: string;
   message: string;
-  assigned_to?: string;
-  status?: string;
-  source?: string;
   created_at?: string;
   updated_at?: string;
 }
