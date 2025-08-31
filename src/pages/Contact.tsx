@@ -123,7 +123,7 @@ const Contact: React.FC = () => {
                     <MapPin className="h-6 w-6 text-purple-600" />
                   </div>
                   <div>
-                    <h3 className="text-lg font-semibold text-slate-800 mb-2">Visit Us</h3>
+                    <h3 className="text-lg font-semibold text-slate-800 mb-2">Mailing</h3>
                     {getSetting('company_address') ? (
                       <p className="text-slate-600 whitespace-pre-line">{getSetting('company_address')}</p>
                     ) : (
