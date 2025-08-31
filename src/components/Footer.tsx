@@ -46,28 +46,39 @@ const Footer: React.FC = () => {
               {getSetting('company_description', 'Your trusted partner for brand development, AI solutions, and business funding. We blend creativity, technology, and financial expertise to drive your business forward.')}
             </p>
             
-            {/* Contact Information */}
-            <div className="space-y-2">
-              <div className="flex items-center space-x-3">
-                <Mail className="h-4 w-4 text-blue-400" />
-                <span className="text-slate-300">
-                  {getSetting('company_email', 'info@squiretown.co')}
-                </span>
-              </div>
-              <div className="flex items-center space-x-3">
-                <Phone className="h-4 w-4 text-blue-400" />
-                <span className="text-slate-300">
-                  {getSetting('company_phone', '(555) 123-4567')}
-                </span>
-              </div>
-              <div className="flex items-center space-x-3">
-                <MapPin className="h-4 w-4 text-blue-400" />
-                <span className="text-slate-300">
-                  {getSetting('company_address', '15 Monauk Hwy, Suite 112, Hampton Bays, NY 11946')}
-                </span>
-              </div>
-            </div>
-          </div>
+           {/* Contact Information */}
+<div className="space-y-2">
+  <div className="flex items-center space-x-3">
+    <Mail className="h-4 w-4 text-blue-400" />
+    <a
+      href={`mailto:${getSetting('company_email', 'info@squiretown.co')}`}
+      className="text-slate-300 hover:text-blue-400 underline underline-offset-2"
+    >
+      {getSetting('company_email', 'info@squiretown.co')}
+    </a>
+  </div>
+  <div className="flex items-center space-x-3">
+    <Phone className="h-4 w-4 text-blue-400" />
+    <a
+      href={`tel:${getSetting('company_phone', '(555) 123-4567')}`}
+      className="text-slate-300 hover:text-blue-400 underline underline-offset-2"
+    >
+      {getSetting('company_phone', '(555) 123-4567')}
+    </a>
+  </div>
+  <div className="flex items-center space-x-3">
+    <MapPin className="h-4 w-4 text-blue-400" />
+    <a
+      href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(getSetting('company_address', '15 Monauk Hwy, Suite 112, Hampton Bays, NY 11946'))}`}
+      target="_blank"
+      rel="noopener noreferrer"
+      className="text-slate-300 hover:text-blue-400 underline underline-offset-2"
+    >
+      {getSetting('company_address', '15 Monauk Hwy, Suite 112, Hampton Bays, NY 11946')}
+    </a>
+  </div>
+</div>
+
 
           {/* Services */}
           <div>
