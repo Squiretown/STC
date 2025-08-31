@@ -57,7 +57,7 @@ const Contact: React.FC = () => {
                     <MapPin className="h-6 w-6 text-purple-600" />
                   </div>
                   <div>
-                    <h3 className="text-lg font-semibold text-slate-800 mb-2">Visit Us</h3>
+                    <h3 className="text-lg font-semibold text-slate-800 mb-2">Mail</h3>
                     <p className="text-slate-600">{getSetting('company_address', '15 Monauk Hwy, Suite 112, Hampton Bays, NY 11946')}</p>
                   </div>
                 </div>
