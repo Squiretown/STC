@@ -75,7 +75,7 @@ const Footer: React.FC = () => {
       className="text-slate-300 hover:text-blue-400 underline underline-offset-2"
     >
       {getSetting('company_address', '15 Monauk Hwy, Suite 112, Hampton Bays, NY 11946')}
-      </span> 
+      </a>
     </div> 
   </div>
 </div>    
