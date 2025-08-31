@@ -185,6 +185,82 @@ const AdminDashboard: React.FC = () => {
           </div>
         </div>
 
+// In your AdminDashboard.tsx or similar file
+import BulkOperations from '../components/BulkOperations';
+
+// Add state for selected leads
+const [selectedLeads, setSelectedLeads] = useState<string[]>([]);
+
+// Add the bulk operation handler functions
+const handleBulkAssign = async (assignTo: string) => {
+  try {
+    await bulkUpdateLeads(selectedLeads, { assigned_to: assignTo });
+    // Refresh leads or update state
+    await refetchLeads();
+    setSelectedLeads([]);
+  } catch (error) {
+    console.error('Error in bulk assignment:', error);
+  }
+};
+
+const handleBulkStatus = async (status: string) => {
+  try {
+    await bulkUpdateLeads(selectedLeads, { status });
+    // Refresh leads or update state
+    await refetchLeads();
+    setSelectedLeads([]);
+  } catch (error) {
+    console.error('Error in bulk status update:', error);
+  }
+};
+
+const handleBulkDelete = async () => {
+  if (window.confirm(`Are you sure you want to delete ${selectedLeads.length} leads?`)) {
+    try {
+      const deletePromises = selectedLeads.map(id => deleteLead(id));
+      await Promise.all(deletePromises);
+      // Refresh leads or update state
+      await refetchLeads();
+      setSelectedLeads([]);
+    } catch (error) {
+      console.error('Error in bulk delete:', error);
+    }
+  }
+};
+
+// Then in your JSX
+return (
+  <div>
+    {/* Other components */}
+    
+    {/* Add the BulkOperations component */}
+    {selectedLeads.length > 0 && (
+      <BulkOperations
+        selectedLeads={selectedLeads}
+        onBulkAssign={handleBulkAssign}
+        onBulkStatus={handleBulkStatus}
+        onBulkDelete={handleBulkDelete}
+        onClearSelection={() => setSelectedLeads([])}
+        teamMembers={teamMembers} // Optional, pass if you have team members data
+      />
+    )}
+    
+    {/* Your leads table */}
+    <LeadsTable
+      leads={leads}
+      selectedLeads={selectedLeads}
+      onSelectLead={(id) => {
+        setSelectedLeads(prev => 
+          prev.includes(id) 
+            ? prev.filter(leadId => leadId !== id) 
+            : [...prev, id]
+        );
+      }}
+      // ... other props
+    />
+  </div>
+);
+        
         {/* Leads Table */}
         <div className="bg-white rounded-xl shadow-lg overflow-hidden">
           <div className="px-6 py-4 border-b border-slate-200">
