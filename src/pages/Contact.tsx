@@ -1,64 +1,7 @@
 import React from 'react';
 import { Mail, Phone, MapPin, Clock } from 'lucide-react';
 import { useCMS } from '../hooks/useCMS';
-
-// Simple ContactForm component - you can replace this with your full ContactForm component
-const ContactForm: React.FC<{ className?: string; title?: string; subtitle?: string }> = ({ 
-  className, 
-  title = "Send us a Message", 
-  subtitle = "Fill out the form below and we'll get back to you as soon as possible." 
-}) => (
-  <div className={`bg-white rounded-xl p-8 ${className}`}>
-    <h3 className="text-2xl font-bold text-slate-800 mb-3">{title}</h3>
-    <p className="text-slate-600 mb-8">{subtitle}</p>
-    
-    <form className="space-y-6">
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div>
-          <label className="block text-sm font-medium text-slate-700 mb-2">Name</label>
-          <input 
-            type="text" 
-            className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-            placeholder="Your full name"
-          />
-        </div>
-        <div>
-          <label className="block text-sm font-medium text-slate-700 mb-2">Email</label>
-          <input 
-            type="email" 
-            className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-            placeholder="your@email.com"
-          />
-        </div>
-      </div>
-      
-      <div>
-        <label className="block text-sm font-medium text-slate-700 mb-2">Subject</label>
-        <input 
-          type="text" 
-          className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-          placeholder="What's this about?"
-        />
-      </div>
-      
-      <div>
-        <label className="block text-sm font-medium text-slate-700 mb-2">Message</label>
-        <textarea 
-          rows={5}
-          className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-          placeholder="Tell us about your project..."
-        />
-      </div>
-      
-      <button 
-        type="submit"
-        className="w-full bg-blue-600 text-white py-3 px-6 rounded-lg hover:bg-blue-700 transition-colors duration-200 font-medium"
-      >
-        Send Message
-      </button>
-    </form>
-  </div>
-);
+import ContactForm from '../components/ContactForm';
 
 const Contact: React.FC = () => {
   const { getContent, getSetting, loading, error, refetch } = useCMS();
