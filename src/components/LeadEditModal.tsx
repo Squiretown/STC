@@ -389,4 +389,4 @@ const LeadEditModal: React.FC<LeadEditModalProps> = ({
   );
 };
 
-export default LeadEditModal
+export default LeadEditModal;
