@@ -77,9 +77,7 @@ const Footer: React.FC = () => {
       {getSetting('company_address', '15 Monauk Hwy, Suite 112, Hampton Bays, NY 11946')}
     </a>
   </div>
-</div>
-
-
+</div>      
           {/* Services */}
           <div>
             <h3 className="text-lg font-semibold text-white mb-4">Services</h3>
