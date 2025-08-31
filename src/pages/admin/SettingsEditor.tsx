@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Save, RefreshCw, Settings } from 'lucide-react';
-import { useCMS } from '../../hooks/useCMS';
+import { useCMS } from "../../hooks/useCMS";
 import LogoManager from '../../components/admin/LogoManager';
 
 const SettingsEditor: React.FC = () => {
