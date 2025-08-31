@@ -1,13 +1,15 @@
-import React from 'react';
-import { Users, Mail, Calendar, TrendingUp, Edit, Eye } from 'lucide-react';
+import React, { useState } from 'react';
+import { Users, Mail, Calendar, TrendingUp, Edit, Eye, Check } from 'lucide-react';
 import { useLeads } from '../hooks/useLeads';
 import LeadEditModal from '../components/LeadEditModal';
+import BulkOperations from '../components/BulkOperations';
 import type { Lead } from '../lib/supabase';
 
 const AdminDashboard: React.FC = () => {
-  const { leads, loading, error, updateLead, deleteLead, refetch } = useLeads();
-  const [selectedLead, setSelectedLead] = React.useState<Lead | null>(null);
-  const [isEditModalOpen, setIsEditModalOpen] = React.useState(false);
+  const { leads, loading, error, updateLead, deleteLead, bulkUpdateLeads, refetch } = useLeads();
+  const [selectedLead, setSelectedLead] = useState<Lead | null>(null);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [selectedLeads, setSelectedLeads] = useState<string[]>([]);
 
   // Status color mapping
   const getStatusColor = (status: string) => {
@@ -51,6 +53,64 @@ const AdminDashboard: React.FC = () => {
       await refetch(); // Refresh the leads list
     }
     return success;
+  };
+
+  // Bulk operations handlers
+  const handleBulkAssign = async (assignTo: string) => {
+    try {
+      const success = await bulkUpdateLeads(selectedLeads, { assigned_to: assignTo });
+      if (success) {
+        await refetch(); // Refresh leads list
+        setSelectedLeads([]);
+      }
+    } catch (error) {
+      console.error('Error in bulk assignment:', error);
+    }
+  };
+
+  const handleBulkStatus = async (status: string) => {
+    try {
+      const success = await bulkUpdateLeads(selectedLeads, { status });
+      if (success) {
+        await refetch(); // Refresh leads list
+        setSelectedLeads([]);
+      }
+    } catch (error) {
+      console.error('Error in bulk status update:', error);
+    }
+  };
+
+  const handleBulkDelete = async () => {
+    if (window.confirm(`Are you sure you want to delete ${selectedLeads.length} leads?`)) {
+      try {
+        const deletePromises = selectedLeads.map(id => deleteLead(id));
+        await Promise.all(deletePromises);
+        await refetch(); // Refresh leads list
+        setSelectedLeads([]);
+      } catch (error) {
+        console.error('Error in bulk delete:', error);
+      }
+    }
+  };
+
+  // Toggle lead selection
+  const handleToggleLeadSelection = (leadId: string) => {
+    setSelectedLeads(prev => 
+      prev.includes(leadId) 
+        ? prev.filter(id => id !== leadId) 
+        : [...prev, leadId]
+    );
+  };
+
+  // Toggle all leads selection
+  const handleToggleAllLeads = () => {
+    if (selectedLeads.length === leads.length) {
+      // Deselect all
+      setSelectedLeads([]);
+    } else {
+      // Select all
+      setSelectedLeads(leads.map(lead => lead.id));
+    }
   };
 
   if (loading) {
@@ -184,82 +244,17 @@ const AdminDashboard: React.FC = () => {
             </div>
           </div>
         </div>
-
-// In your AdminDashboard.tsx or similar file
-import BulkOperations from '../components/BulkOperations';
-
-// Add state for selected leads
-const [selectedLeads, setSelectedLeads] = useState<string[]>([]);
-
-// Add the bulk operation handler functions
-const handleBulkAssign = async (assignTo: string) => {
-  try {
-    await bulkUpdateLeads(selectedLeads, { assigned_to: assignTo });
-    // Refresh leads or update state
-    await refetchLeads();
-    setSelectedLeads([]);
-  } catch (error) {
-    console.error('Error in bulk assignment:', error);
-  }
-};
-
-const handleBulkStatus = async (status: string) => {
-  try {
-    await bulkUpdateLeads(selectedLeads, { status });
-    // Refresh leads or update state
-    await refetchLeads();
-    setSelectedLeads([]);
-  } catch (error) {
-    console.error('Error in bulk status update:', error);
-  }
-};
-
-const handleBulkDelete = async () => {
-  if (window.confirm(`Are you sure you want to delete ${selectedLeads.length} leads?`)) {
-    try {
-      const deletePromises = selectedLeads.map(id => deleteLead(id));
-      await Promise.all(deletePromises);
-      // Refresh leads or update state
-      await refetchLeads();
-      setSelectedLeads([]);
-    } catch (error) {
-      console.error('Error in bulk delete:', error);
-    }
-  }
-};
-
-// Then in your JSX
-return (
-  <div>
-    {/* Other components */}
-    
-    {/* Add the BulkOperations component */}
-    {selectedLeads.length > 0 && (
-      <BulkOperations
-        selectedLeads={selectedLeads}
-        onBulkAssign={handleBulkAssign}
-        onBulkStatus={handleBulkStatus}
-        onBulkDelete={handleBulkDelete}
-        onClearSelection={() => setSelectedLeads([])}
-        teamMembers={teamMembers} // Optional, pass if you have team members data
-      />
-    )}
-    
-    {/* Your leads table */}
-    <LeadsTable
-      leads={leads}
-      selectedLeads={selectedLeads}
-      onSelectLead={(id) => {
-        setSelectedLeads(prev => 
-          prev.includes(id) 
-            ? prev.filter(leadId => leadId !== id) 
-            : [...prev, id]
-        );
-      }}
-      // ... other props
-    />
-  </div>
-);
+        
+        {/* Bulk Operations */}
+        {selectedLeads.length > 0 && (
+          <BulkOperations
+            selectedLeads={selectedLeads}
+            onBulkAssign={handleBulkAssign}
+            onBulkStatus={handleBulkStatus}
+            onBulkDelete={handleBulkDelete}
+            onClearSelection={() => setSelectedLeads([])}
+          />
+        )}
         
         {/* Leads Table */}
         <div className="bg-white rounded-xl shadow-lg overflow-hidden">
@@ -271,6 +266,16 @@ return (
             <table className="w-full">
               <thead className="bg-slate-50">
                 <tr>
+                  <th className="px-6 py-3 text-left">
+                    <div className="flex items-center">
+                      <input
+                        type="checkbox"
+                        checked={selectedLeads.length === leads.length && leads.length > 0}
+                        onChange={handleToggleAllLeads}
+                        className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-slate-300 rounded"
+                      />
+                    </div>
+                  </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">Name</th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">Email</th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">Company</th>
@@ -284,7 +289,15 @@ return (
               </thead>
               <tbody className="bg-white divide-y divide-slate-200">
                 {leads.map((lead) => (
-                  <tr key={lead.id} className="hover:bg-slate-50">
+                  <tr key={lead.id} className={`hover:bg-slate-50 ${selectedLeads.includes(lead.id) ? 'bg-blue-50' : ''}`}>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <input
+                        type="checkbox"
+                        checked={selectedLeads.includes(lead.id)}
+                        onChange={() => handleToggleLeadSelection(lead.id)}
+                        className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-slate-300 rounded"
+                      />
+                    </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-slate-900">
                       {lead.name}
                     </td>
