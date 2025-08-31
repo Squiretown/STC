@@ -1,210 +1,227 @@
-import React from 'react';
-import { Mail, Phone, MapPin, Clock } from 'lucide-react';
-import ContactForm from '../components/ContactForm';
-import { useCMS } from '../hooks/useCMS'; // Fixed import path
+import { useState, useEffect } from 'react';
+import { supabase } from '../lib/supabase';
 
-const Contact: React.FC = () => {
-  const { getContent, getSetting, loading, error } = useCMS();
+// Define types
+export interface SiteSetting {
+  id: number;
+  setting_key: string;
+  setting_value: string;
+  created_at?: string;
+  updated_at?: string;
+}
 
-  // Show loading state while CMS data is being fetched
-  if (loading) {
-    return (
-      <div className="pt-16 min-h-screen flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-          <p className="text-slate-600">Loading contact information...</p>
-        </div>
-      </div>
-    );
-  }
+export interface SiteContent {
+  id: number;
+  page_name: string;
+  section_key: string;
+  content_value: string;
+  content_type: 'text' | 'html' | 'json';
+  created_at?: string;
+  updated_at?: string;
+}
 
-  // Show error state if Supabase connection fails
-  if (error) {
-    return (
-      <div className="pt-16 min-h-screen flex items-center justify-center">
-        <div className="text-center max-w-md mx-auto p-6">
-          <div className="text-red-600 mb-4">
-            <Mail className="h-12 w-12 mx-auto mb-2" />
-          </div>
-          <h2 className="text-xl font-semibold text-slate-800 mb-3">Configuration Required</h2>
-          <p className="text-slate-600 mb-4 whitespace-pre-line">{error}</p>
-          <button 
-            onClick={() => window.location.reload()} 
-            className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
-          >
-            Retry
-          </button>
-        </div>
-      </div>
-    );
-  }
+export interface CMSData {
+  settings: Record<string, string>;
+  content: Record<string, Record<string, string>>;
+}
 
-  return (
-    <div className="pt-16">
-      {/* Hero Section */}
-      <section className="bg-slate-50 py-24">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center">
-            <h1 className="text-5xl md:text-6xl font-bold text-slate-800 mb-8">
-              {getContent('contact', 'hero_title', 'Let\'s Start a Conversation')}
-            </h1>
-            <p className="text-xl md:text-2xl text-slate-600 mb-12 max-w-4xl mx-auto">
-              {getContent('contact', 'hero_subtitle', 'Ready to transform your business? We\'re here to help you navigate the complexities of brand development, AI implementation, and business funding.')}
-            </p>
-          </div>
-        </div>
-      </section>
+export const useCMS = () => {
+  const [cmsData, setCmsData] = useState<CMSData>({
+    settings: {},
+    content: {}
+  });
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-      {/* Contact Information & Form */}
-      <section className="py-24 bg-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 lg:grid-cols-5 gap-16">
-            {/* Contact Information */}
-            <div className="lg:col-span-2">
-              <h2 className="text-3xl font-bold text-slate-800 mb-8">Get in Touch</h2>
-              <div className="space-y-8">
-                <div className="flex items-start space-x-4">
-                  <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center flex-shrink-0">
-                    <Mail className="h-6 w-6 text-blue-600" />
-                  </div>
-                  <div>
-                    <h3 className="text-lg font-semibold text-slate-800 mb-2">Email Us</h3>
-                    {/* Display primary email */}
-                    {getSetting('company_email') && (
-                      <p className="text-slate-600">
-                        <a href={`mailto:${getSetting('company_email')}`} className="hover:text-blue-600">
-                          {getSetting('company_email')}
-                        </a>
-                      </p>
-                    )}
-                    {/* Display secondary email if it exists */}
-                    {getSetting('contact_email_secondary') && (
-                      <p className="text-slate-600">
-                        <a href={`mailto:${getSetting('contact_email_secondary')}`} className="hover:text-blue-600">
-                          {getSetting('contact_email_secondary')}
-                        </a>
-                      </p>
-                    )}
-                    {/* Fallback if no emails are set */}
-                    {!getSetting('company_email') && !getSetting('contact_email_secondary') && (
-                      <p className="text-slate-500 italic">Email not configured in CMS</p>
-                    )}
-                  </div>
-                </div>
+  // Fetch all CMS data
+  const fetchCMSData = async () => {
+    try {
+      setLoading(true);
+      setError(null);
 
-                <div className="flex items-start space-x-4">
-                  <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center flex-shrink-0">
-                    <Phone className="h-6 w-6 text-green-600" />
-                  </div>
-                  <div>
-                    <h3 className="text-lg font-semibold text-slate-800 mb-2">Call Us</h3>
-                    {getSetting('company_phone') && (
-                      <p className="text-slate-600">
-                        Main: <a href={`tel:${getSetting('company_phone')}`} className="hover:text-blue-600">
-                          {getSetting('company_phone')}
-                        </a>
-                      </p>
-                    )}
-                    {getSetting('company_phone_direct') && (
-                      <p className="text-slate-600">
-                        Direct: <a href={`tel:${getSetting('company_phone_direct')}`} className="hover:text-blue-600">
-                          {getSetting('company_phone_direct')}
-                        </a>
-                      </p>
-                    )}
-                    {!getSetting('company_phone') && !getSetting('company_phone_direct') && (
-                      <p className="text-slate-500 italic">Phone numbers not configured in CMS</p>
-                    )}
-                  </div>
-                </div>
+      // Check if Supabase is properly configured
+      const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+      const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
+      
+      if (!supabaseUrl || !supabaseAnonKey) {
+        throw new Error('Supabase configuration missing. Please check your environment variables.');
+      }
 
-                <div className="flex items-start space-x-4">
-                  <div className="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center flex-shrink-0">
-                    <MapPin className="h-6 w-6 text-purple-600" />
-                  </div>
-                  <div>
-                    <h3 className="text-lg font-semibold text-slate-800 mb-2">Mail</h3>
-                    {getSetting('company_address') ? (
-                      <p className="text-slate-600 whitespace-pre-line">{getSetting('company_address')}</p>
-                    ) : (
-                      <p className="text-slate-500 italic">Address not configured in CMS</p>
-                    )}
-                  </div>
-                </div>
+      // Validate URL format
+      try {
+        new URL(supabaseUrl);
+      } catch {
+        throw new Error(`Invalid Supabase URL format: ${supabaseUrl}`);
+      }
 
-                <div className="flex items-start space-x-4">
-                  <div className="w-12 h-12 bg-orange-100 rounded-lg flex items-center justify-center flex-shrink-0">
-                    <Clock className="h-6 w-6 text-orange-600" />
-                  </div>
-                  <div>
-                    <h3 className="text-lg font-semibold text-slate-800 mb-2">Business Hours</h3>
-                    {getSetting('business_hours') ? (
-                      <p className="text-slate-600 whitespace-pre-line">{getSetting('business_hours')}</p>
-                    ) : (
-                      <p className="text-slate-500 italic">Business hours not configured in CMS</p>
-                    )}
-                  </div>
-                </div>
-              </div>
+      // Fetch settings
+      const { data: settings, error: settingsError } = await supabase
+        .from('site_settings')
+        .select('*');
 
-              {/* Response Time */}
-              <div className="mt-12 bg-blue-50 rounded-xl p-6">
-                <h3 className="text-lg font-semibold text-blue-800 mb-3">Response Time</h3>
-                <p className="text-blue-700">
-                  {getSetting('response_time', 'We typically respond to all inquiries within 24 hours during business days. For urgent matters, please call us directly.')}
-                </p>
-              </div>
-            </div>
+      if (settingsError) throw settingsError;
 
-            {/* Contact Form */}
-            <div className="lg:col-span-3">
-              <ContactForm 
-                className="shadow-xl"
-                title={getContent('contact', 'form_title', 'Send us a Message')}
-                subtitle={getContent('contact', 'form_subtitle', 'Fill out the form below and we\'ll get back to you as soon as possible.')}
-              />
-            </div>
-          </div>
-        </div>
-      </section>
+      // Fetch content
+      const { data: content, error: contentError } = await supabase
+        .from('site_content')
+        .select('*');
 
-      {/* Service Areas */}
-      <section className="py-24 bg-slate-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl font-bold text-slate-800 mb-6">Service Areas</h2>
-            <p className="text-xl text-slate-600 max-w-3xl mx-auto">
-              While we're based in New York, we work with clients nationwide and internationally 
-              across all our service verticals.
-            </p>
-          </div>
+      if (contentError) throw contentError;
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <div className="bg-white rounded-xl p-8 text-center shadow-lg">
-              <h3 className="text-2xl font-bold text-slate-800 mb-4">Brand & Marketing</h3>
-              <p className="text-slate-600">
-                Serving clients globally with remote collaboration and strategic brand development.
-              </p>
-            </div>
+      // Transform settings into key-value pairs
+      const settingsMap = (settings || []).reduce((acc, setting) => {
+        acc[setting.setting_key] = setting.setting_value;
+        return acc;
+      }, {} as Record<string, string>);
 
-            <div className="bg-white rounded-xl p-8 text-center shadow-lg">
-              <h3 className="text-2xl font-bold text-slate-800 mb-4">AI Technology</h3>
-              <p className="text-slate-600">
-                Providing AI solutions and automation services to businesses worldwide.
-              </p>
-            </div>
+      // Transform content into nested structure
+      const contentMap = (content || []).reduce((acc, item) => {
+        if (!acc[item.page_name]) {
+          acc[item.page_name] = {};
+        }
+        acc[item.page_name][item.section_key] = item.content_value;
+        return acc;
+      }, {} as Record<string, Record<string, string>>);
 
-            <div className="bg-white rounded-xl p-8 text-center shadow-lg">
-              <h3 className="text-2xl font-bold text-slate-800 mb-4">Business Funding</h3>
-              <p className="text-slate-600">
-                Comprehensive business funding solutions for companies across all industries nationwide.
-              </p>
-            </div>
-          </div>
-        </div>
-      </section>
-    </div>
-  );
+      setCmsData({
+        settings: settingsMap,
+        content: contentMap
+      });
+
+    } catch (err) {
+      console.error('Error fetching CMS data:', err);
+     
+      // Provide more helpful error messages
+      let errorMessage = 'Failed to fetch CMS data';
+      
+      if (err instanceof Error) {
+        if (err.message.includes('Failed to fetch')) {
+          const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+          errorMessage = `Cannot connect to Supabase at ${supabaseUrl}. Please check:\n1. Your internet connection\n2. Supabase project is running\n3. Environment variables are correct\n4. No firewall blocking the connection`;
+        } else if (err.message.includes('Supabase configuration')) {
+          errorMessage = err.message;
+        } else if (err.message.includes('Invalid Supabase URL')) {
+          errorMessage = err.message;
+        } else {
+          errorMessage = err.message;
+        }
+      }
+      
+      setError(errorMessage);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Update a setting
+  const updateSetting = async (key: string, value: string) => {
+    try {
+      const { error } = await supabase
+        .from('site_settings')
+        .upsert({
+          setting_key: key,
+          setting_value: value
+        }, { onConflict: 'setting_key' });
+
+      if (error) throw error;
+
+      // Update local state
+      setCmsData(prev => ({
+        ...prev,
+        settings: {
+          ...prev.settings,
+          [key]: value
+        }
+      }));
+
+      return true;
+    } catch (err) {
+      console.error('Error updating setting:', err);
+      setError(err instanceof Error ? err.message : 'Failed to update setting');
+      return false;
+    }
+  };
+
+  // Update content
+  const updateContent = async (pageName: string, sectionKey: string, value: string, contentType: 'text' | 'html' | 'json' = 'text') => {
+    try {
+      const { error } = await supabase
+        .from('site_content')
+        .upsert({
+          page_name: pageName,
+          section_key: sectionKey,
+          content_value: value,
+          content_type: contentType
+        });
+
+      if (error) throw error;
+
+      // Update local state
+      setCmsData(prev => ({
+        ...prev,
+        content: {
+          ...prev.content,
+          [pageName]: {
+            ...prev.content[pageName],
+            [sectionKey]: value
+          }
+        }
+      }));
+
+      return true;
+    } catch (err) {
+      console.error('Error updating content:', err);
+      setError(err instanceof Error ? err.message : 'Failed to update content');
+      return false;
+    }
+  };
+
+  // Get setting value with fallback
+  const getSetting = (key: string, fallback = '') => {
+    return cmsData.settings[key] || fallback;
+  };
+
+  // Get content value with fallback
+  const getContent = (pageName: string, sectionKey: string, fallback = '') => {
+    return cmsData.content[pageName]?.[sectionKey] || fallback;
+  };
+
+  useEffect(() => {
+    fetchCMSData();
+
+    // Set up real-time subscriptions
+    const settingsSubscription = supabase
+      .channel('settings_changes')
+      .on('postgres_changes', 
+        { event: '*', schema: 'public', table: 'site_settings' }, 
+        () => fetchCMSData()
+      )
+      .subscribe();
+
+    const contentSubscription = supabase
+      .channel('content_changes')
+      .on('postgres_changes', 
+        { event: '*', schema: 'public', table: 'site_content' }, 
+        () => fetchCMSData()
+      )
+      .subscribe();
+
+    return () => {
+      settingsSubscription.unsubscribe();
+      contentSubscription.unsubscribe();
+    };
+  }, []);
+
+  return {
+    cmsData,
+    loading,
+    error,
+    updateSetting,
+    updateContent,
+    getSetting,
+    getContent,
+    refetch: fetchCMSData
+  };
 };
 
-export default Contact
+export default useCMS;
