@@ -22,9 +22,7 @@ const Navbar: React.FC = () => {
     { name: 'AI Technology', path: '/ai-technology' },
     { name: 'Business Funding', path: '/business-funding' },
     { name: 'Title Services', path: '/real-estate-title-services' },
-    { name: 'About', path: '/about' },
-    { name: 'Contact', path: '/contact' },
-  ];
+     ];
 
   return (
     <nav className={`fixed w-full z-50 transition-all duration-300 ${
