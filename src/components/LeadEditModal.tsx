@@ -177,7 +177,7 @@ const LeadEditModal: React.FC<LeadEditModalProps> = ({
                 </label>
                 <input
                   type="text"
-                  id="nameimport React, { useState, useEffect } from 'react';
+                  id="name"
 import { X, Save, Trash2, AlertTriangle } from 'lucide-react';
 import type { Lead } from '../lib/supabase';
 
