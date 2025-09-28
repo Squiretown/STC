@@ -80,8 +80,10 @@ export const useAuth = () => {
       if (error) {
         // Handle session-related errors gracefully (user is effectively already logged out)
         if (error.message.includes('Auth session missing!') || 
-            error.message.includes('Session from session_id claim in JWT does not exist')) {
+            error.message.includes('Session from session_id claim in JWT does not exist') ||
+            error.message.includes('refresh_token_not_found')) {
           console.warn('Session already expired, user effectively logged out');
+          setUser(null);
           return;
         }
         throw error;
@@ -90,9 +92,11 @@ export const useAuth = () => {
       // Handle the case where session doesn't exist on server (user already logged out)
       if (err instanceof Error && (
         err.message.includes('Session from session_id claim in JWT does not exist') ||
-        err.message.includes('Auth session missing!')
+        err.message.includes('Auth session missing!') ||
+        err.message.includes('refresh_token_not_found')
       )) {
         console.warn('Session already expired on server, user effectively logged out');
+        setUser(null);
         // Don't set error state as this is expected behavior
         return;
       }
