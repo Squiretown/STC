@@ -5,6 +5,7 @@ import ContactForm from '../components/ContactForm';
 
 const RealEstateTitleServices: React.FC = () => {
   return (
+    <>
       {/* Hero Section */}
       <section className="relative bg-gradient-to-br from-orange-900 via-amber-900 to-orange-800 text-white py-24">
         <div className="absolute inset-0 bg-black/20"></div>
@@ -253,6 +254,7 @@ const RealEstateTitleServices: React.FC = () => {
           />
         </div>
       </section>
+    </>
   );
 };
 

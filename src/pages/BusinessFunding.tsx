@@ -5,6 +5,7 @@ import ContactForm from '../components/ContactForm';
 
 const BusinessFunding: React.FC = () => {
   return (
+    <>
       {/* Hero Section */}
       <section className="relative bg-gradient-to-br from-green-900 via-emerald-900 to-green-800 text-white py-24">
         <div className="absolute inset-0 bg-black/20"></div>
@@ -253,6 +254,7 @@ const BusinessFunding: React.FC = () => {
           />
         </div>
       </section>
+    </>
   );
 };
 
