@@ -20,9 +20,11 @@ function App() {
   return (
     <Router>
       <ScrollToTop />
+      <a href="#main-content" className="skip-link">Skip to main content</a>
       <div className="min-h-screen bg-white">
         <Navbar />
-        <Routes>
+        <main id="main-content">
+          <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/brand-marketing" element={<BrandMarketing />} />
           <Route path="/ai-technology" element={<AITechnology />} />
@@ -30,6 +32,7 @@ function App() {
           <Route path="/real-estate-title-services" element={<RealEstateTitleServices />} />
           <Route path="/about" element={<About />} />
           <Route path="/contact" element={<Contact />} />
+          <Route path="/accessibility" element={<Accessibility />} />
           <Route path="/admin" element={
             <ProtectedRoute>
               <AdminLayout />
@@ -40,6 +43,7 @@ function App() {
             <Route path="settings" element={<SettingsEditor />} />
           </Route>
         </Routes>
+        </main>
         <Footer />
       </div>
     </Router>

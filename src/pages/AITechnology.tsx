@@ -5,14 +5,13 @@ import ContactForm from '../components/ContactForm';
 
 const AITechnology: React.FC = () => {
   return (
-    <div className="pt-16">
       {/* Hero Section */}
       <section className="relative bg-gradient-to-br from-blue-900 via-cyan-900 to-blue-800 text-white py-24">
         <div className="absolute inset-0 bg-black/20"></div>
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center">
             <div className="w-20 h-20 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-8">
-              <Bot className="h-10 w-10 text-white" />
+              <Bot className="h-10 w-10 text-white" aria-hidden="true" focusable="false" />
             </div>
             <h1 className="text-5xl md:text-6xl font-bold mb-8">
               AI Technology Stack Building & Automation
@@ -26,7 +25,7 @@ const AITechnology: React.FC = () => {
               className="bg-white text-blue-900 px-8 py-4 rounded-lg text-lg font-semibold hover:bg-blue-50 transition-all duration-200 inline-flex items-center group"
             >
               Start Your AI Journey
-              <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform duration-200" />
+              <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform duration-200" aria-hidden="true" focusable="false" />
             </Link>
           </div>
         </div>
@@ -253,7 +252,6 @@ const AITechnology: React.FC = () => {
           />
         </div>
       </section>
-    </div>
   );
 };
 

@@ -7,7 +7,6 @@ const About: React.FC = () => {
   const { getContent, getSetting } = useCMS();
 
   return (
-    <div className="pt-16">
       {/* Hero Section */}
       <section className="bg-slate-50 py-24">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -36,7 +35,7 @@ const About: React.FC = () => {
               
               <div className="space-y-6">
                 <div className="flex items-start space-x-4">
-                  <CheckCircle className="h-6 w-6 text-green-500 mt-1 flex-shrink-0" />
+                  <CheckCircle className="h-6 w-6 text-green-500 mt-1 flex-shrink-0" aria-hidden="true" focusable="false" />
                   <div>
                     <h3 className="text-xl font-semibold text-slate-800 mb-2">Innovation-Driven</h3>
                     <p className="text-slate-600">
@@ -47,7 +46,7 @@ const About: React.FC = () => {
                 </div>
 
                 <div className="flex items-start space-x-4">
-                  <CheckCircle className="h-6 w-6 text-green-500 mt-1 flex-shrink-0" />
+                  <CheckCircle className="h-6 w-6 text-green-500 mt-1 flex-shrink-0" aria-hidden="true" focusable="false" />
                   <div>
                     <h3 className="text-xl font-semibold text-slate-800 mb-2">Results-Focused</h3>
                     <p className="text-slate-600">
@@ -58,7 +57,7 @@ const About: React.FC = () => {
                 </div>
 
                 <div className="flex items-start space-x-4">
-                  <CheckCircle className="h-6 w-6 text-green-500 mt-1 flex-shrink-0" />
+                  <CheckCircle className="h-6 w-6 text-green-500 mt-1 flex-shrink-0" aria-hidden="true" focusable="false" />
                   <div>
                     <h3 className="text-xl font-semibold text-slate-800 mb-2">Partnership Approach</h3>
                     <p className="text-slate-600">
@@ -95,7 +94,7 @@ const About: React.FC = () => {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             <div className="bg-white rounded-2xl p-8 shadow-lg">
               <div className="w-16 h-16 bg-purple-100 rounded-xl flex items-center justify-center mb-6">
-                <Target className="h-8 w-8 text-purple-600" />
+                <Target className="h-8 w-8 text-purple-600" aria-hidden="true" focusable="false" />
               </div>
               <h3 className="text-2xl font-bold text-slate-800 mb-4">Brand Strategy</h3>
               <p className="text-slate-600 leading-relaxed">
@@ -106,7 +105,7 @@ const About: React.FC = () => {
 
             <div className="bg-white rounded-2xl p-8 shadow-lg">
               <div className="w-16 h-16 bg-blue-100 rounded-xl flex items-center justify-center mb-6">
-                <Award className="h-8 w-8 text-blue-600" />
+                <Award className="h-8 w-8 text-blue-600" aria-hidden="true" focusable="false" />
               </div>
               <h3 className="text-2xl font-bold text-slate-800 mb-4">AI Innovation</h3>
               <p className="text-slate-600 leading-relaxed">
@@ -117,7 +116,7 @@ const About: React.FC = () => {
 
             <div className="bg-white rounded-2xl p-8 shadow-lg">
               <div className="w-16 h-16 bg-green-100 rounded-xl flex items-center justify-center mb-6">
-                <TrendingUp className="h-8 w-8 text-green-600" />
+                <TrendingUp className="h-8 w-8 text-green-600" aria-hidden="true" focusable="false" />
               </div>
               <h3 className="text-2xl font-bold text-slate-800 mb-4">Financial Expertise</h3>
               <p className="text-slate-600 leading-relaxed">
@@ -143,7 +142,7 @@ const About: React.FC = () => {
             <div className="space-y-8">
               <div className="flex items-start space-x-4">
                 <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center flex-shrink-0">
-                  <Users className="h-6 w-6 text-blue-600" />
+                  <Users className="h-6 w-6 text-blue-600" aria-hidden="true" focusable="false" />
                 </div>
                 <div>
                   <h3 className="text-xl font-semibold text-slate-800 mb-2">Integrated Approach</h3>
@@ -156,7 +155,7 @@ const About: React.FC = () => {
 
               <div className="flex items-start space-x-4">
                 <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center flex-shrink-0">
-                  <Target className="h-6 w-6 text-green-600" />
+                  <Target className="h-6 w-6 text-green-600" aria-hidden="true" focusable="false" />
                 </div>
                 <div>
                   <h3 className="text-xl font-semibold text-slate-800 mb-2">Proven Track Record</h3>
@@ -169,7 +168,7 @@ const About: React.FC = () => {
 
               <div className="flex items-start space-x-4">
                 <div className="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center flex-shrink-0">
-                  <Award className="h-6 w-6 text-purple-600" />
+                  <Award className="h-6 w-6 text-purple-600" aria-hidden="true" focusable="false" />
                 </div>
                 <div>
                   <h3 className="text-xl font-semibold text-slate-800 mb-2">Industry Recognition</h3>
@@ -184,7 +183,7 @@ const About: React.FC = () => {
             <div className="space-y-8">
               <div className="flex items-start space-x-4">
                 <div className="w-12 h-12 bg-orange-100 rounded-lg flex items-center justify-center flex-shrink-0">
-                  <TrendingUp className="h-6 w-6 text-orange-600" />
+                  <TrendingUp className="h-6 w-6 text-orange-600" aria-hidden="true" focusable="false" />
                 </div>
                 <div>
                   <h3 className="text-xl font-semibold text-slate-800 mb-2">Scalable Solutions</h3>
@@ -197,7 +196,7 @@ const About: React.FC = () => {
 
               <div className="flex items-start space-x-4">
                 <div className="w-12 h-12 bg-cyan-100 rounded-lg flex items-center justify-center flex-shrink-0">
-                  <CheckCircle className="h-6 w-6 text-cyan-600" />
+                  <CheckCircle className="h-6 w-6 text-cyan-600" aria-hidden="true" focusable="false" />
                 </div>
                 <div>
                   <h3 className="text-xl font-semibold text-slate-800 mb-2">Transparent Process</h3>
@@ -210,7 +209,7 @@ const About: React.FC = () => {
 
               <div className="flex items-start space-x-4">
                 <div className="w-12 h-12 bg-pink-100 rounded-lg flex items-center justify-center flex-shrink-0">
-                  <Users className="h-6 w-6 text-pink-600" />
+                  <Users className="h-6 w-6 text-pink-600" aria-hidden="true" focusable="false" />
                 </div>
                 <div>
                   <h3 className="text-xl font-semibold text-slate-800 mb-2">Long-term Partnership</h3>
@@ -239,7 +238,7 @@ const About: React.FC = () => {
               className="bg-white text-blue-600 px-8 py-4 rounded-lg text-lg font-semibold hover:bg-blue-50 transition-all duration-200 inline-flex items-center justify-center group"
             >
               Get Started Today
-              <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform duration-200" />
+              <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform duration-200" aria-hidden="true" focusable="false" />
             </Link>
             <Link
               to="/"
@@ -250,7 +249,6 @@ const About: React.FC = () => {
           </div>
         </div>
       </section>
-    </div>
   );
 };
 

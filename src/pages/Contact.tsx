@@ -9,7 +9,7 @@ const Contact: React.FC = () => {
   // Show loading state while CMS data is being fetched
   if (loading) {
     return (
-      <div className="pt-16 min-h-screen flex items-center justify-center">
+      <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
           <p className="text-slate-600">Loading contact information...</p>
@@ -21,10 +21,10 @@ const Contact: React.FC = () => {
   // Show error state if Supabase connection fails
   if (error) {
     return (
-      <div className="pt-16 min-h-screen flex items-center justify-center">
+      <div className="min-h-screen flex items-center justify-center">
         <div className="text-center max-w-md mx-auto p-6">
           <div className="text-red-600 mb-4">
-            <Mail className="h-12 w-12 mx-auto mb-2" />
+            <Mail className="h-12 w-12 mx-auto mb-2" aria-hidden="true" focusable="false" />
           </div>
           <h2 className="text-xl font-semibold text-slate-800 mb-3">Configuration Required</h2>
           <p className="text-slate-600 mb-4 whitespace-pre-line">{error}</p>
@@ -40,7 +40,6 @@ const Contact: React.FC = () => {
   }
 
   return (
-    <div className="pt-16">
       {/* Hero Section */}
       <section className="bg-slate-50 py-24">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -65,7 +64,7 @@ const Contact: React.FC = () => {
               <div className="space-y-8">
                 <div className="flex items-start space-x-4">
                   <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center flex-shrink-0">
-                    <Mail className="h-6 w-6 text-blue-600" />
+                    <Mail className="h-6 w-6 text-blue-600" aria-hidden="true" focusable="false" />
                   </div>
                   <div>
                     <h3 className="text-lg font-semibold text-slate-800 mb-2">Email Us</h3>
@@ -94,7 +93,7 @@ const Contact: React.FC = () => {
 
                 <div className="flex items-start space-x-4">
                   <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center flex-shrink-0">
-                    <Phone className="h-6 w-6 text-green-600" />
+                    <Phone className="h-6 w-6 text-green-600" aria-hidden="true" focusable="false" />
                   </div>
                   <div>
                     <h3 className="text-lg font-semibold text-slate-800 mb-2">Call Us</h3>
@@ -120,7 +119,7 @@ const Contact: React.FC = () => {
 
                 <div className="flex items-start space-x-4">
                   <div className="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center flex-shrink-0">
-                    <MapPin className="h-6 w-6 text-purple-600" />
+                    <MapPin className="h-6 w-6 text-purple-600" aria-hidden="true" focusable="false" />
                   </div>
                   <div>
                     <h3 className="text-lg font-semibold text-slate-800 mb-2">Mailing</h3>
@@ -134,7 +133,7 @@ const Contact: React.FC = () => {
 
                 <div className="flex items-start space-x-4">
                   <div className="w-12 h-12 bg-orange-100 rounded-lg flex items-center justify-center flex-shrink-0">
-                    <Clock className="h-6 w-6 text-orange-600" />
+                    <Clock className="h-6 w-6 text-orange-600" aria-hidden="true" focusable="false" />
                   </div>
                   <div>
                     <h3 className="text-lg font-semibold text-slate-800 mb-2">Business Hours</h3>
@@ -203,7 +202,6 @@ const Contact: React.FC = () => {
           </div>
         </div>
       </section>
-    </div>
   );
 };
 

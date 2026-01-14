@@ -8,7 +8,6 @@ const Home: React.FC = () => {
   const { getContent, getSetting } = useCMS();
 
   return (
-    <div className="pt-16">
       {/* Hero Section */}
       <section className="relative bg-gradient-to-br from-slate-900 via-blue-900 to-slate-800 text-white py-24 lg:py-32">
         <div className="absolute inset-0 bg-black/20"></div>
@@ -27,7 +26,7 @@ const Home: React.FC = () => {
                 className="bg-blue-600 text-white px-8 py-4 rounded-lg text-lg font-semibold hover:bg-blue-700 transition-all duration-200 inline-flex items-center justify-center group"
               >
                 {getSetting('hero_cta_primary', 'Get Started Today')}
-                <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform duration-200" />
+                <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform duration-200" aria-hidden="true" focusable="false" />
               </Link>
               <Link
                 to="/about"
@@ -56,24 +55,24 @@ const Home: React.FC = () => {
             {/* Brand & Marketing */}
             <div className="bg-white rounded-2xl p-8 shadow-lg hover:shadow-xl transition-all duration-300 group">
               <div className="w-16 h-16 bg-gradient-to-br from-purple-500 to-pink-600 rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
-                <Palette className="h-8 w-8 text-white" />
+                <Palette className="h-8 w-8 text-white" aria-hidden="true" focusable="false" />
               </div>
               <h3 className="text-2xl font-bold text-slate-800 mb-4">Brand Awareness & Marketing</h3>
               <p className="text-slate-600 mb-6 leading-relaxed">
                 Build a powerful brand identity that resonates with your audience. From logo design to comprehensive 
                 marketing strategies, we help you stand out in the marketplace.
               </p>
-              <ul className="space-y-2 mb-8">
+              <ul className="space-y-2 mb-8 list-none">
                 <li className="flex items-center text-slate-600">
-                  <CheckCircle className="h-5 w-5 text-green-500 mr-3" />
+                  <CheckCircle className="h-5 w-5 text-green-500 mr-3" aria-hidden="true" focusable="false" />
                   Logo & Visual Identity Design
                 </li>
                 <li className="flex items-center text-slate-600">
-                  <CheckCircle className="h-5 w-5 text-green-500 mr-3" />
+                  <CheckCircle className="h-5 w-5 text-green-500 mr-3" aria-hidden="true" focusable="false" />
                   Marketing Content Creation
                 </li>
                 <li className="flex items-center text-slate-600">
-                  <CheckCircle className="h-5 w-5 text-green-500 mr-3" />
+                  <CheckCircle className="h-5 w-5 text-green-500 mr-3" aria-hidden="true" focusable="false" />
                   Brand Strategy & Positioning
                 </li>
               </ul>
@@ -82,31 +81,31 @@ const Home: React.FC = () => {
                 className="inline-flex items-center text-purple-600 font-semibold hover:text-purple-700 transition-colors duration-200"
               >
                 Learn More
-                <ArrowRight className="ml-2 h-5 w-5" />
+                <ArrowRight className="ml-2 h-5 w-5" aria-hidden="true" focusable="false" />
               </Link>
             </div>
 
             {/* AI Technology */}
             <div className="bg-white rounded-2xl p-8 shadow-lg hover:shadow-xl transition-all duration-300 group">
               <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-cyan-600 rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
-                <Bot className="h-8 w-8 text-white" />
+                <Bot className="h-8 w-8 text-white" aria-hidden="true" focusable="false" />
               </div>
               <h3 className="text-2xl font-bold text-slate-800 mb-4">AI Technology Stack Building</h3>
               <p className="text-slate-600 mb-6 leading-relaxed">
                 Harness the power of artificial intelligence to automate processes, enhance decision-making, 
                 and drive innovation throughout your organization.
               </p>
-              <ul className="space-y-2 mb-8">
+              <ul className="space-y-2 mb-8 list-none">
                 <li className="flex items-center text-slate-600">
-                  <CheckCircle className="h-5 w-5 text-green-500 mr-3" />
+                  <CheckCircle className="h-5 w-5 text-green-500 mr-3" aria-hidden="true" focusable="false" />
                   Custom AI Solution Development
                 </li>
                 <li className="flex items-center text-slate-600">
-                  <CheckCircle className="h-5 w-5 text-green-500 mr-3" />
+                  <CheckCircle className="h-5 w-5 text-green-500 mr-3" aria-hidden="true" focusable="false" />
                   Workflow Automation
                 </li>
                 <li className="flex items-center text-slate-600">
-                  <CheckCircle className="h-5 w-5 text-green-500 mr-3" />
+                  <CheckCircle className="h-5 w-5 text-green-500 mr-3" aria-hidden="true" focusable="false" />
                   Integration & Optimization
                 </li>
               </ul>
@@ -115,31 +114,31 @@ const Home: React.FC = () => {
                 className="inline-flex items-center text-blue-600 font-semibold hover:text-blue-700 transition-colors duration-200"
               >
                 Learn More
-                <ArrowRight className="ml-2 h-5 w-5" />
+                <ArrowRight className="ml-2 h-5 w-5" aria-hidden="true" focusable="false" />
               </Link>
             </div>
 
             {/* Business Funding */}
             <div className="bg-white rounded-2xl p-8 shadow-lg hover:shadow-xl transition-all duration-300 group">
               <div className="w-16 h-16 bg-gradient-to-br from-green-500 to-emerald-600 rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
-                <Building className="h-8 w-8 text-white" />
+                <Building className="h-8 w-8 text-white" aria-hidden="true" focusable="false" />
               </div>
               <h3 className="text-2xl font-bold text-slate-800 mb-4">Business Funding</h3>
               <p className="text-slate-600 mb-6 leading-relaxed">
                 Secure the capital you need to grow your business. We provide expert advisory 
                 and funding solutions for all your business financing needs.
               </p>
-              <ul className="space-y-2 mb-8">
+              <ul className="space-y-2 mb-8 list-none">
                 <li className="flex items-center text-slate-600">
-                  <CheckCircle className="h-5 w-5 text-green-500 mr-3" />
+                  <CheckCircle className="h-5 w-5 text-green-500 mr-3" aria-hidden="true" focusable="false" />
                   Business Loan Advisory
                 </li>
                 <li className="flex items-center text-slate-600">
-                  <CheckCircle className="h-5 w-5 text-green-500 mr-3" />
+                  <CheckCircle className="h-5 w-5 text-green-500 mr-3" aria-hidden="true" focusable="false" />
                   Funding Structure Planning
                 </li>
                 <li className="flex items-center text-slate-600">
-                  <CheckCircle className="h-5 w-5 text-green-500 mr-3" />
+                  <CheckCircle className="h-5 w-5 text-green-500 mr-3" aria-hidden="true" focusable="false" />
                   Capital Access Services
                 </li>
               </ul>
@@ -148,31 +147,31 @@ const Home: React.FC = () => {
                 className="inline-flex items-center text-green-600 font-semibold hover:text-green-700 transition-colors duration-200"
               >
                 Learn More
-                <ArrowRight className="ml-2 h-5 w-5" />
+                <ArrowRight className="ml-2 h-5 w-5" aria-hidden="true" focusable="false" />
               </Link>
             </div>
 
             {/* Real Estate Title Services */}
             <div className="bg-white rounded-2xl p-8 shadow-lg hover:shadow-xl transition-all duration-300 group">
               <div className="w-16 h-16 bg-gradient-to-br from-orange-500 to-amber-600 rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
-                <HomeIcon className="h-8 w-8 text-white" />
+                <HomeIcon className="h-8 w-8 text-white" aria-hidden="true" focusable="false" />
               </div>
               <h3 className="text-2xl font-bold text-slate-800 mb-4">Real Estate Title Services</h3>
               <p className="text-slate-600 mb-6 leading-relaxed">
                 Comprehensive title examination, insurance, and closing services to ensure 
                 smooth and secure real estate transactions.
               </p>
-              <ul className="space-y-2 mb-8">
+              <ul className="space-y-2 mb-8 list-none">
                 <li className="flex items-center text-slate-600">
-                  <CheckCircle className="h-5 w-5 text-green-500 mr-3" />
+                  <CheckCircle className="h-5 w-5 text-green-500 mr-3" aria-hidden="true" focusable="false" />
                   Title Searches & Examination
                 </li>
                 <li className="flex items-center text-slate-600">
-                  <CheckCircle className="h-5 w-5 text-green-500 mr-3" />
+                  <CheckCircle className="h-5 w-5 text-green-500 mr-3" aria-hidden="true" focusable="false" />
                   Title Insurance Policies
                 </li>
                 <li className="flex items-center text-slate-600">
-                  <CheckCircle className="h-5 w-5 text-green-500 mr-3" />
+                  <CheckCircle className="h-5 w-5 text-green-500 mr-3" aria-hidden="true" focusable="false" />
                   Closing Coordination
                 </li>
               </ul>
@@ -181,7 +180,7 @@ const Home: React.FC = () => {
                 className="inline-flex items-center text-orange-600 font-semibold hover:text-orange-700 transition-colors duration-200"
               >
                 Learn More
-                <ArrowRight className="ml-2 h-5 w-5" />
+                <ArrowRight className="ml-2 h-5 w-5" aria-hidden="true" focusable="false" />
               </Link>
             </div>
           </div>
@@ -194,21 +193,21 @@ const Home: React.FC = () => {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-12 text-center">
             <div>
               <div className="w-20 h-20 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-6">
-                <Users className="h-10 w-10 text-blue-600" />
+                <Users className="h-10 w-10 text-blue-600" aria-hidden="true" focusable="false" />
               </div>
               <h3 className="text-4xl font-bold text-slate-800 mb-2">500+</h3>
               <p className="text-xl text-slate-600">Satisfied Clients</p>
             </div>
             <div>
               <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
-                <Award className="h-10 w-10 text-green-600" />
+                <Award className="h-10 w-10 text-green-600" aria-hidden="true" focusable="false" />
               </div>
               <h3 className="text-4xl font-bold text-slate-800 mb-2">15+</h3>
               <p className="text-xl text-slate-600">Years of Experience</p>
             </div>
             <div>
               <div className="w-20 h-20 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-6">
-                <TrendingUp className="h-10 w-10 text-purple-600" />
+                <TrendingUp className="h-10 w-10 text-purple-600" aria-hidden="true" focusable="false" />
               </div>
               <h3 className="text-4xl font-bold text-slate-800 mb-2">98%</h3>
               <p className="text-xl text-slate-600">Success Rate</p>
@@ -223,7 +222,6 @@ const Home: React.FC = () => {
           <ContactForm />
         </div>
       </section>
-    </div>
   );
 };
 

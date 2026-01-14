@@ -25,22 +25,58 @@ const ContactForm: React.FC<ContactFormProps> = ({
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
+
+  const validateForm = () => {
+    const errors: Record<string, string> = {};
+    
+    if (!formData.name.trim()) {
+      errors.name = 'Full name is required';
+    }
+    
+    if (!formData.email.trim()) {
+      errors.email = 'Email address is required';
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
+      errors.email = 'Please enter a valid email address';
+    }
+    
+    if (!formData.message.trim()) {
+      errors.message = 'Message is required';
+    }
+    
+    setFieldErrors(errors);
+    return Object.keys(errors).length === 0;
+  };
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
   ) => {
+    const { name, value } = e.target;
     setFormData({
       ...formData,
-      [e.target.name]: e.target.value
+      [name]: value
     });
+    
+    // Clear field error when user starts typing
+    if (fieldErrors[name]) {
+      setFieldErrors(prev => ({
+        ...prev,
+        [name]: ''
+      }));
+    }
   };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    if (!validateForm()) {
+      return;
+    }
     handleFormSubmission();
   };
 
   const handleFormSubmission = async () => {
+    if (!validateForm()) return;
+    
     setIsSubmitting(true);
     setError(null);
 
@@ -90,7 +126,11 @@ const ContactForm: React.FC<ContactFormProps> = ({
 
   if (isSubmitted) {
     return (
-      <div className={`bg-green-50 border border-green-200 rounded-xl p-8 text-center ${className}`}>
+      <div 
+        className={`bg-green-50 border border-green-200 rounded-xl p-8 text-center ${className}`}
+        role="alert"
+        aria-live="polite"
+      >
         <CheckCircle className="h-16 w-16 text-green-600 mx-auto mb-4" />
         <h3 className="text-xl font-semibold text-green-800 mb-2">Thank You!</h3>
         <p className="text-green-700">
@@ -108,7 +148,10 @@ const ContactForm: React.FC<ContactFormProps> = ({
       </div>
 
       {error && (
-        <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-6">
+        <div 
+          className="bg-red-50 border border-red-200 rounded-lg p-4 mb-6"
+          role="alert"
+        >
           <p className="text-red-700 text-sm">{error}</p>
         </div>
       )}
@@ -116,46 +159,66 @@ const ContactForm: React.FC<ContactFormProps> = ({
       <form onSubmit={handleSubmit} className="space-y-6">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>
-            <label htmlFor="name" className="block text-sm font-medium text-slate-700 mb-2">
-              Full Name *
+            <label htmlFor="contact-name" className="block text-sm font-medium text-slate-700 mb-2">
+              Full Name <span className="text-red-600" aria-label="required">*</span>
             </label>
             <input
               type="text"
-              id="name"
+              id="contact-name"
               name="name"
               required
+              aria-required="true"
+              aria-invalid={fieldErrors.name ? 'true' : 'false'}
+              aria-describedby={fieldErrors.name ? 'name-error' : undefined}
               value={formData.name}
               onChange={handleChange}
-              className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+              className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 ${
+                fieldErrors.name ? 'border-red-500' : 'border-slate-300'
+              }`}
               placeholder="John Smith"
             />
+            {fieldErrors.name && (
+              <p id="name-error" className="mt-2 text-sm text-red-600" role="alert">
+                {fieldErrors.name}
+              </p>
+            )}
           </div>
 
           <div>
-            <label htmlFor="email" className="block text-sm font-medium text-slate-700 mb-2">
-              Email Address *
+            <label htmlFor="contact-email" className="block text-sm font-medium text-slate-700 mb-2">
+              Email Address <span className="text-red-600" aria-label="required">*</span>
             </label>
             <input
               type="email"
-              id="email"
+              id="contact-email"
               name="email"
               required
+              aria-required="true"
+              aria-invalid={fieldErrors.email ? 'true' : 'false'}
+              aria-describedby={fieldErrors.email ? 'email-error' : undefined}
               value={formData.email}
               onChange={handleChange}
-              className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+              className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 ${
+                fieldErrors.email ? 'border-red-500' : 'border-slate-300'
+              }`}
               placeholder="john@company.com"
             />
+            {fieldErrors.email && (
+              <p id="email-error" className="mt-2 text-sm text-red-600" role="alert">
+                {fieldErrors.email}
+              </p>
+            )}
           </div>
         </div>
 
         {/* NEW: Phone field */}
         <div>
-          <label htmlFor="phone" className="block text-sm font-medium text-slate-700 mb-2">
+          <label htmlFor="contact-phone" className="block text-sm font-medium text-slate-700 mb-2">
             Phone
            </label>
           <input
            type="tel"
-           id="phone"
+           id="contact-phone"
            name="phone"
            inputMode="tel"
            pattern="[0-9()+.\\s-]{7,20}"
@@ -165,17 +228,16 @@ const ContactForm: React.FC<ContactFormProps> = ({
            className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
            placeholder="+1 631 555 1234"
           />
-          {/* If you later standardize to E.164 (+15551234567), we can tighten this. */}
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>
-            <label htmlFor="company" className="block text-sm font-medium text-slate-700 mb-2">
+            <label htmlFor="contact-company" className="block text-sm font-medium text-slate-700 mb-2">
               Company Name
             </label>
             <input
               type="text"
-              id="company"
+              id="contact-company"
               name="company"
               value={formData.company}
               onChange={handleChange}
@@ -185,11 +247,11 @@ const ContactForm: React.FC<ContactFormProps> = ({
           </div>
 
           <div>
-            <label htmlFor="service" className="block text-sm font-medium text-slate-700 mb-2">
+            <label htmlFor="contact-service" className="block text-sm font-medium text-slate-700 mb-2">
               Service Interest
             </label>
             <select
-              id="service"
+              id="contact-service"
               name="service"
               value={formData.service}
               onChange={handleChange}
@@ -207,19 +269,29 @@ const ContactForm: React.FC<ContactFormProps> = ({
         </div>
 
         <div>
-          <label htmlFor="message" className="block text-sm font-medium text-slate-700 mb-2">
-            Message *
+          <label htmlFor="contact-message" className="block text-sm font-medium text-slate-700 mb-2">
+            Message <span className="text-red-600" aria-label="required">*</span>
           </label>
           <textarea
-            id="message"
+            id="contact-message"
             name="message"
             required
+            aria-required="true"
+            aria-invalid={fieldErrors.message ? 'true' : 'false'}
+            aria-describedby={fieldErrors.message ? 'message-error' : undefined}
             rows={6}
             value={formData.message}
             onChange={handleChange}
-            className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+            className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 ${
+              fieldErrors.message ? 'border-red-500' : 'border-slate-300'
+            }`}
             placeholder="Tell us about your project and how we can help..."
           />
+          {fieldErrors.message && (
+            <p id="message-error" className="mt-2 text-sm text-red-600" role="alert">
+              {fieldErrors.message}
+            </p>
+          )}
         </div>
 
         <button
@@ -229,7 +301,7 @@ const ContactForm: React.FC<ContactFormProps> = ({
         >
           <span>{isSubmitting ? 'Sending...' : 'Send Message'}</span>
           {!isSubmitting && (
-            <Send className="h-5 w-5 group-hover:translate-x-1 transition-transform duration-200" />
+            <Send className="h-5 w-5 group-hover:translate-x-1 transition-transform duration-200" aria-hidden="true" focusable="false" />
           )}
         </button>
       </form>
