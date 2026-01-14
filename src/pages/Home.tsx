@@ -8,6 +8,7 @@ const Home: React.FC = () => {
   const { getContent, getSetting } = useCMS();
 
   return (
+    <>
       {/* Hero Section */}
       <section className="relative bg-gradient-to-br from-slate-900 via-blue-900 to-slate-800 text-white py-24 lg:py-32">
         <div className="absolute inset-0 bg-black/20"></div>
@@ -222,6 +223,7 @@ const Home: React.FC = () => {
           <ContactForm />
         </div>
       </section>
+    </>
   );
 };
 

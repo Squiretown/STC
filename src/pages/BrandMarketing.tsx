@@ -5,6 +5,7 @@ import ContactForm from '../components/ContactForm';
 
 const BrandMarketing: React.FC = () => {
   return (
+    <>
       {/* Hero Section */}
       <section className="relative bg-gradient-to-br from-purple-900 via-pink-900 to-purple-800 text-white py-24">
         <div className="absolute inset-0 bg-black/20"></div>
@@ -206,6 +207,7 @@ const BrandMarketing: React.FC = () => {
           />
         </div>
       </section>
+    </>
   );
 };
 

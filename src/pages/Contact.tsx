@@ -40,6 +40,7 @@ const Contact: React.FC = () => {
   }
 
   return (
+    <>
       {/* Hero Section */}
       <section className="bg-slate-50 py-24">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -202,6 +203,7 @@ const Contact: React.FC = () => {
           </div>
         </div>
       </section>
+    </>
   );
 };
 

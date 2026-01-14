@@ -5,6 +5,7 @@ import ContactForm from '../components/ContactForm';
 
 const AITechnology: React.FC = () => {
   return (
+    <>
       {/* Hero Section */}
       <section className="relative bg-gradient-to-br from-blue-900 via-cyan-900 to-blue-800 text-white py-24">
         <div className="absolute inset-0 bg-black/20"></div>
@@ -252,6 +253,7 @@ const AITechnology: React.FC = () => {
           />
         </div>
       </section>
+    </>
   );
 };
 
