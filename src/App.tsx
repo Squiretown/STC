@@ -6,7 +6,6 @@ import Home from './pages/Home';
 import BrandMarketing from './pages/BrandMarketing';
 import AITechnology from './pages/AITechnology';
 import BusinessFunding from './pages/BusinessFunding';
-import RealEstateTitleServices from './pages/RealEstateTitleServices';
 import About from './pages/About';
 import Contact from './pages/Contact';
 import Accessibility from './pages/Accessibility';
@@ -34,8 +33,7 @@ function App() {
           <Route path="/brand-marketing" element={<BrandMarketing />} />
           <Route path="/ai-technology" element={<AITechnology />} />
           <Route path="/business-funding" element={<BusinessFunding />} />
-          <Route path="/real-estate-title-services" element={<RealEstateTitleServices />} />
-          <Route path="/about" element={<About />} />
+<Route path="/about" element={<About />} />
           <Route path="/contact" element={<Contact />} />
           <Route path="/accessibility" element={<Accessibility />} />
           <Route path="/privacy" element={<PrivacyPolicy />} />

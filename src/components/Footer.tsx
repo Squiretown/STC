@@ -100,10 +100,10 @@ const Footer: React.FC = () => {
                 </Link>
               </li>
               <li>
-                <Link to="/real-estate-title-services" className="text-slate-300 hover:text-blue-400 transition-colors duration-200">
-                  Title Services
+                <Link to="/work" className="text-slate-300 hover:text-blue-400 transition-colors duration-200">
+                  Our Work
                 </Link>
-                </li>
+              </li>
               </ul>
             </nav>
           </div>

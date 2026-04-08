@@ -21,8 +21,8 @@ const Navbar: React.FC = () => {
     { name: 'Brand & Marketing', path: '/brand-marketing' },
     { name: 'AI Technology', path: '/ai-technology' },
     { name: 'Business Funding', path: '/business-funding' },
-    { name: 'Title Services', path: '/real-estate-title-services' },
-     ];
+    { name: 'Our Work', path: '/work' },
+  ];
 
   return (
     <header>
