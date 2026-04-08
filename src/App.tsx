@@ -10,6 +10,8 @@ import RealEstateTitleServices from './pages/RealEstateTitleServices';
 import About from './pages/About';
 import Contact from './pages/Contact';
 import Accessibility from './pages/Accessibility';
+import PrivacyPolicy from './pages/PrivacyPolicy';
+import TermsOfService from './pages/TermsOfService';
 import AdminDashboard from './pages/AdminDashboard';
 import AdminLayout from './pages/admin/AdminLayout';
 import ContentEditor from './pages/admin/ContentEditor';
@@ -34,6 +36,8 @@ function App() {
           <Route path="/about" element={<About />} />
           <Route path="/contact" element={<Contact />} />
           <Route path="/accessibility" element={<Accessibility />} />
+          <Route path="/privacy" element={<PrivacyPolicy />} />
+          <Route path="/terms" element={<TermsOfService />} />
           <Route path="/admin" element={
             <ProtectedRoute>
               <AdminLayout />

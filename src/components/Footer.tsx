@@ -144,12 +144,12 @@ const Footer: React.FC = () => {
               © 2025 {getSetting('company_name', 'Squiretown Consulting')} LLC. All rights reserved.
             </p>
             <div className="flex space-x-6 mt-4 md:mt-0">
-              <a href="/privacy" className="text-slate-400 hover:text-blue-400 text-sm transition-colors duration-200">
+              <Link to="/privacy" className="text-slate-400 hover:text-blue-400 text-sm transition-colors duration-200">
                 Privacy Policy
-              </a>
-              <a href="/terms" className="text-slate-400 hover:text-blue-400 text-sm transition-colors duration-200">
+              </Link>
+              <Link to="/terms" className="text-slate-400 hover:text-blue-400 text-sm transition-colors duration-200">
                 Terms of Service
-              </a>
+              </Link>
             </div>
           </div>
         </div>
