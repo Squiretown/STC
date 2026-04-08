@@ -60,6 +60,25 @@ export interface TeamMember {
   created_at: string;
 }
 
+export interface PortfolioProject {
+  id: string;
+  created_at?: string;
+  updated_at?: string;
+  name: string;
+  tagline: string;
+  description: string;
+  category: string;
+  tags: string[];
+  url?: string | null;
+  status: 'live' | 'in-development';
+  featured: boolean;
+  sort_order: number;
+  accent_color: string;
+  accent_light: string;
+  accent_text: string;
+  icon_name: string;
+}
+
 // Helper functions for fetching related data
 export const fetchLeadNotes = async (leadId: string): Promise<LeadNote[]> => {
   const { data, error } = await supabase

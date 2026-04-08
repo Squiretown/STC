@@ -16,6 +16,8 @@ import AdminDashboard from './pages/AdminDashboard';
 import AdminLayout from './pages/admin/AdminLayout';
 import ContentEditor from './pages/admin/ContentEditor';
 import SettingsEditor from './pages/admin/SettingsEditor';
+import ProjectsEditor from './pages/admin/ProjectsEditor';
+import Work from './pages/Work';
 import ProtectedRoute from './components/ProtectedRoute';
 import Footer from './components/Footer';
 
@@ -38,12 +40,14 @@ function App() {
           <Route path="/accessibility" element={<Accessibility />} />
           <Route path="/privacy" element={<PrivacyPolicy />} />
           <Route path="/terms" element={<TermsOfService />} />
+          <Route path="/work" element={<Work />} />
           <Route path="/admin" element={
             <ProtectedRoute>
               <AdminLayout />
             </ProtectedRoute>
           }>
             <Route index element={<AdminDashboard />} />
+            <Route path="projects" element={<ProjectsEditor />} />
             <Route path="content" element={<ContentEditor />} />
             <Route path="settings" element={<SettingsEditor />} />
           </Route>
