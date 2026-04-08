@@ -20,7 +20,7 @@ const Navbar: React.FC = () => {
   const navItems = [
     { name: 'Brand & Marketing', path: '/brand-marketing' },
     { name: 'AI Technology', path: '/ai-technology' },
-    { name: 'Business Funding', path: '/business-funding' },
+    { name: 'Business Strategy', path: '/business-funding' },
     { name: 'Our Work', path: '/work' },
   ];
 
