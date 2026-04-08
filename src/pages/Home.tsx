@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowRight, Palette, Bot, Building, Home as HomeIcon, CheckCircle, Users, Award, TrendingUp } from 'lucide-react';
+import { ArrowRight, Palette, Bot, Building, Briefcase, CheckCircle, Users, Award, TrendingUp } from 'lucide-react';
 import ContactForm from '../components/ContactForm';
 import { useCMS } from '../hooks/useCMS';
 
@@ -119,68 +119,66 @@ const Home: React.FC = () => {
               </Link>
             </div>
 
-            {/* Business Funding */}
+            {/* Business Strategy & Consulting */}
             <div className="bg-white rounded-2xl p-8 shadow-lg hover:shadow-xl transition-all duration-300 group">
-              <div className="w-16 h-16 bg-gradient-to-br from-green-500 to-emerald-600 rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
+              <div className="w-16 h-16 bg-gradient-to-br from-blue-600 to-slate-700 rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
                 <Building className="h-8 w-8 text-white" aria-hidden="true" focusable="false" />
               </div>
-              <h3 className="text-2xl font-bold text-slate-800 mb-4">Business Funding</h3>
+              <h3 className="text-2xl font-bold text-slate-800 mb-4">Business Strategy & Consulting</h3>
               <p className="text-slate-600 mb-6 leading-relaxed">
-                Secure the capital you need to grow your business. We provide expert advisory 
-                and funding solutions for all your business financing needs.
+                We work alongside business owners as a strategic partner — helping you structure, plan, and position your business for sustainable growth and long-term success.
               </p>
               <ul className="space-y-2 mb-8 list-none">
                 <li className="flex items-center text-slate-600">
                   <CheckCircle className="h-5 w-5 text-green-500 mr-3" aria-hidden="true" focusable="false" />
-                  Business Loan Advisory
+                  Business Structure & Planning
                 </li>
                 <li className="flex items-center text-slate-600">
                   <CheckCircle className="h-5 w-5 text-green-500 mr-3" aria-hidden="true" focusable="false" />
-                  Funding Structure Planning
+                  Growth Strategy Development
                 </li>
                 <li className="flex items-center text-slate-600">
                   <CheckCircle className="h-5 w-5 text-green-500 mr-3" aria-hidden="true" focusable="false" />
-                  Capital Access Services
+                  Financial Modeling & Advisory
                 </li>
               </ul>
               <Link
                 to="/business-funding"
-                className="inline-flex items-center text-green-600 font-semibold hover:text-green-700 transition-colors duration-200"
+                className="inline-flex items-center text-blue-600 font-semibold hover:text-blue-700 transition-colors duration-200"
               >
                 Learn More
                 <ArrowRight className="ml-2 h-5 w-5" aria-hidden="true" focusable="false" />
               </Link>
             </div>
 
-            {/* Real Estate Title Services */}
+            {/* Our Work */}
             <div className="bg-white rounded-2xl p-8 shadow-lg hover:shadow-xl transition-all duration-300 group">
-              <div className="w-16 h-16 bg-gradient-to-br from-orange-500 to-amber-600 rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
-                <HomeIcon className="h-8 w-8 text-white" aria-hidden="true" focusable="false" />
+              <div className="w-16 h-16 bg-gradient-to-br from-slate-600 to-slate-800 rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
+                <Briefcase className="h-8 w-8 text-white" aria-hidden="true" focusable="false" />
               </div>
-              <h3 className="text-2xl font-bold text-slate-800 mb-4">Real Estate Title Services</h3>
+              <h3 className="text-2xl font-bold text-slate-800 mb-4">Our Work</h3>
               <p className="text-slate-600 mb-6 leading-relaxed">
-                Comprehensive title examination, insurance, and closing services to ensure 
-                smooth and secure real estate transactions.
+                Explore the platforms, tools, and products we've built — from AI-powered apps to real estate investment platforms and FinTech tools.
               </p>
               <ul className="space-y-2 mb-8 list-none">
                 <li className="flex items-center text-slate-600">
                   <CheckCircle className="h-5 w-5 text-green-500 mr-3" aria-hidden="true" focusable="false" />
-                  Title Searches & Examination
+                  Live product portfolio
                 </li>
                 <li className="flex items-center text-slate-600">
                   <CheckCircle className="h-5 w-5 text-green-500 mr-3" aria-hidden="true" focusable="false" />
-                  Title Insurance Policies
+                  Client case studies
                 </li>
                 <li className="flex items-center text-slate-600">
                   <CheckCircle className="h-5 w-5 text-green-500 mr-3" aria-hidden="true" focusable="false" />
-                  Closing Coordination
+                  AI, FinTech & brand projects
                 </li>
               </ul>
               <Link
-                to="/real-estate-title-services"
-                className="inline-flex items-center text-orange-600 font-semibold hover:text-orange-700 transition-colors duration-200"
+                to="/work"
+                className="inline-flex items-center text-slate-700 font-semibold hover:text-slate-900 transition-colors duration-200"
               >
-                Learn More
+                View Our Work
                 <ArrowRight className="ml-2 h-5 w-5" aria-hidden="true" focusable="false" />
               </Link>
             </div>
