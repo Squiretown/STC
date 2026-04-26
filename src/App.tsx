@@ -11,6 +11,7 @@ import Contact from './pages/Contact';
 import Accessibility from './pages/Accessibility';
 import PrivacyPolicy from './pages/PrivacyPolicy';
 import TermsOfService from './pages/TermsOfService';
+import SmsTerms from './pages/SmsTerms';
 import AdminDashboard from './pages/AdminDashboard';
 import AdminLayout from './pages/admin/AdminLayout';
 import ContentEditor from './pages/admin/ContentEditor';
@@ -37,6 +38,7 @@ function App() {
           <Route path="/contact" element={<Contact />} />
           <Route path="/accessibility" element={<Accessibility />} />
           <Route path="/privacy" element={<PrivacyPolicy />} />
+          <Route path="/sms-terms" element={<SmsTerms />} />
           <Route path="/terms" element={<TermsOfService />} />
           <Route path="/work" element={<Work />} />
           <Route path="/admin" element={

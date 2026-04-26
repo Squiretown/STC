@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import { Shield, Mail } from 'lucide-react';
 
 const PrivacyPolicy: React.FC = () => {
@@ -72,6 +73,32 @@ const PrivacyPolicy: React.FC = () => {
                 We do not sell, rent, or trade your personal information to third parties. Period.
                 The only time we would share your information is if we are legally required to do
                 so, such as in response to a valid subpoena, court order, or other lawful request.
+              </p>
+            </section>
+
+            <section>
+              <h2 className="text-2xl font-bold text-slate-800 mb-4">SMS / Text Messaging Data</h2>
+              <p className="text-slate-600 leading-relaxed mb-4">
+                If you opt in to SMS/text messages through our contact form, we store the
+                following as part of your consent record:
+              </p>
+              <ul className="space-y-2 text-slate-600 list-disc list-inside mb-4">
+                <li>Your phone number</li>
+                <li>A timestamp recording when consent was given</li>
+                <li>The exact disclosure text you agreed to at the time of opt-in</li>
+              </ul>
+              <p className="text-slate-600 leading-relaxed">
+                <strong>
+                  We do not sell, rent, or share your phone number or SMS opt-in data with
+                  third parties or affiliates for marketing or promotional purposes.
+                </strong>{' '}
+                This data is used solely to communicate with you in connection with your
+                inquiry and to maintain our compliance records. For full details on our
+                text messaging program, see our{' '}
+                <Link to="/sms-terms" className="text-blue-600 hover:text-blue-800 underline">
+                  SMS Terms
+                </Link>
+                .
               </p>
             </section>
 

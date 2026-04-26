@@ -1,7 +1,16 @@
 // src/components/ContactForm.tsx
 import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
 import { Send, CheckCircle } from 'lucide-react';
-import { supabase } from '../lib/supabase'; // removed `type Lead` to avoid type mismatch during rollout
+import { supabase } from '../lib/supabase';
+
+const SMS_CONSENT_DISCLOSURE =
+  'I agree to receive SMS/text messages from Squiretown Consulting, LLC. ' +
+  'Message types include appointment confirmations, appointment reminders, follow-up messages, and customer care responses. ' +
+  'Message frequency varies. Message and data rates may apply. ' +
+  'Reply HELP for help. Reply STOP to cancel at any time. ' +
+  'Consent is not a condition of purchase or service. ' +
+  'See our SMS Terms (squiretown.co/sms-terms) and Privacy Policy (squiretown.co/privacy) for details.';
 
 interface ContactFormProps {
   className?: string;
@@ -17,10 +26,11 @@ const ContactForm: React.FC<ContactFormProps> = ({
   const [formData, setFormData] = useState({
     name: '',
     email: '',
-    phone: '',          // NEW
+    phone: '',
     company: '',
     service: '',
-    message: ''
+    message: '',
+    smsConsent: false
   });
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -29,21 +39,25 @@ const ContactForm: React.FC<ContactFormProps> = ({
 
   const validateForm = () => {
     const errors: Record<string, string> = {};
-    
+
     if (!formData.name.trim()) {
       errors.name = 'Full name is required';
     }
-    
+
     if (!formData.email.trim()) {
       errors.email = 'Email address is required';
     } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
       errors.email = 'Please enter a valid email address';
     }
-    
+
+    if (formData.smsConsent && !formData.phone.trim()) {
+      errors.phone = 'Phone number is required when opting in to SMS messages';
+    }
+
     if (!formData.message.trim()) {
       errors.message = 'Message is required';
     }
-    
+
     setFieldErrors(errors);
     return Object.keys(errors).length === 0;
   };
@@ -51,67 +65,62 @@ const ContactForm: React.FC<ContactFormProps> = ({
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
   ) => {
-    const { name, value } = e.target;
-    setFormData({
-      ...formData,
-      [name]: value
-    });
-    
-    // Clear field error when user starts typing
+    const { name, type } = e.target;
+    const value = type === 'checkbox'
+      ? (e.target as HTMLInputElement).checked
+      : e.target.value;
+
+    setFormData({ ...formData, [name]: value });
+
     if (fieldErrors[name]) {
-      setFieldErrors(prev => ({
-        ...prev,
-        [name]: ''
-      }));
+      setFieldErrors(prev => ({ ...prev, [name]: '' }));
     }
   };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!validateForm()) {
-      return;
-    }
+    if (!validateForm()) return;
     handleFormSubmission();
   };
 
   const handleFormSubmission = async () => {
     if (!validateForm()) return;
-    
+
     setIsSubmitting(true);
     setError(null);
 
     try {
-      // lightweight phone clean-up; store raw if not provided
       const phoneClean = formData.phone.trim() || null;
 
-      // Build payload (no type coupling while we roll out the new column)
       const leadData = {
         name: formData.name.trim(),
         email: formData.email.trim(),
-        phone: phoneClean,                          // NEW
+        phone: phoneClean,
         company: formData.company.trim() || null,
         service: formData.service || null,
-        message: formData.message.trim()
+        message: formData.message.trim(),
+        sms_consent: formData.smsConsent,
+        sms_consent_at: formData.smsConsent ? new Date().toISOString() : null,
+        sms_consent_text: formData.smsConsent ? SMS_CONSENT_DISCLOSURE : null
       };
 
-      // Insert lead into Supabase — NO .select() (avoids SELECT RLS requirement)
       const { error: supabaseError } = await supabase
         .from('leads')
-        .insert([leadData]); // returning=minimal
+        .insert([leadData]);
 
       if (supabaseError) {
         console.error('Supabase error:', supabaseError);
         throw new Error(supabaseError.message || 'Failed to submit your message. Please try again.');
       }
 
-      // Reset form and show success message
       setFormData({
         name: '',
         email: '',
-        phone: '',            // NEW
+        phone: '',
         company: '',
         service: '',
-        message: ''
+        message: '',
+        smsConsent: false
       });
 
       setIsSubmitted(true);
@@ -126,7 +135,7 @@ const ContactForm: React.FC<ContactFormProps> = ({
 
   if (isSubmitted) {
     return (
-      <div 
+      <div
         className={`bg-green-50 border border-green-200 rounded-xl p-8 text-center ${className}`}
         role="alert"
         aria-live="polite"
@@ -148,10 +157,7 @@ const ContactForm: React.FC<ContactFormProps> = ({
       </div>
 
       {error && (
-        <div 
-          className="bg-red-50 border border-red-200 rounded-lg p-4 mb-6"
-          role="alert"
-        >
+        <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-6" role="alert">
           <p className="text-red-700 text-sm">{error}</p>
         </div>
       )}
@@ -211,23 +217,34 @@ const ContactForm: React.FC<ContactFormProps> = ({
           </div>
         </div>
 
-        {/* NEW: Phone field */}
         <div>
           <label htmlFor="contact-phone" className="block text-sm font-medium text-slate-700 mb-2">
             Phone
-           </label>
+            {formData.smsConsent && (
+              <span className="text-red-600 ml-1" aria-label="required">*</span>
+            )}
+          </label>
           <input
-           type="tel"
-           id="contact-phone"
-           name="phone"
-           inputMode="tel"
-           pattern="[0-9()+.\\s-]{7,20}"
-           title="Phone number, 7–20 chars; digits, spaces, +, -, . allowed"
-           value={formData.phone}
-           onChange={handleChange}
-           className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
-           placeholder="+1 631 555 1234"
+            type="tel"
+            id="contact-phone"
+            name="phone"
+            inputMode="tel"
+            pattern="[0-9()+.\s-]{7,20}"
+            title="Phone number, 7–20 chars; digits, spaces, +, -, . allowed"
+            value={formData.phone}
+            onChange={handleChange}
+            aria-invalid={fieldErrors.phone ? 'true' : 'false'}
+            aria-describedby={fieldErrors.phone ? 'phone-error' : undefined}
+            className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 ${
+              fieldErrors.phone ? 'border-red-500' : 'border-slate-300'
+            }`}
+            placeholder="+1 631 555 1234"
           />
+          {fieldErrors.phone && (
+            <p id="phone-error" className="mt-2 text-sm text-red-600" role="alert">
+              {fieldErrors.phone}
+            </p>
+          )}
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -292,6 +309,41 @@ const ContactForm: React.FC<ContactFormProps> = ({
               {fieldErrors.message}
             </p>
           )}
+        </div>
+
+        {/* SMS Consent — separate, unchecked by default, TCPA/CTIA compliant */}
+        <div className="bg-slate-50 border-2 border-slate-200 rounded-lg p-5">
+          <div className="flex items-start">
+            <input
+              type="checkbox"
+              id="sms-consent"
+              name="smsConsent"
+              checked={formData.smsConsent}
+              onChange={handleChange}
+              className="h-5 w-5 mt-1 flex-shrink-0 rounded border-slate-300 text-blue-600 focus:ring-blue-500 cursor-pointer"
+            />
+            <label htmlFor="sms-consent" className="ml-3 text-sm text-slate-600 leading-relaxed cursor-pointer">
+              <span className="font-semibold">
+                I agree to receive SMS/text messages from Squiretown Consulting, LLC.
+              </span>{' '}
+              Message types include{' '}
+              <span className="font-semibold">appointment confirmations, appointment reminders, follow-up messages</span>
+              {' '}and customer care responses.{' '}
+              <span className="font-semibold">Message frequency varies. Message and data rates may apply.</span>{' '}
+              Reply <span className="font-semibold">HELP</span> for help.
+              Reply <span className="font-semibold">STOP</span> to cancel at any time.{' '}
+              <em>Consent is not a condition of purchase or service.</em>{' '}
+              See our{' '}
+              <Link to="/sms-terms" className="text-blue-600 hover:text-blue-800 underline">
+                SMS Terms
+              </Link>{' '}
+              and{' '}
+              <Link to="/privacy" className="text-blue-600 hover:text-blue-800 underline">
+                Privacy Policy
+              </Link>{' '}
+              for details.
+            </label>
+          </div>
         </div>
 
         <button
