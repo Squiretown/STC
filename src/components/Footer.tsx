@@ -66,17 +66,20 @@ const Footer: React.FC = () => {
       {getSetting('company_phone', '(555) 123-4567')}
     </a>
   </div>
-  <div className="flex items-center space-x-3">
-    <Mailbox className="h-4 w-4 text-blue-400" aria-hidden="true" focusable="false" />
-    <a
-      href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(getSetting('company_address', '15 Monauk Hwy, Suite 112, Hampton Bays, NY 11946'))}`}
-      target="_blank"
-      rel="noopener noreferrer"
-      className="text-slate-300 hover:text-blue-400 no-underline hover:no-underline"
-    >
-      {getSetting('company_address', '15 Monauk Hwy, Suite 112, Hampton Bays, NY 11946')}
+  <div className="flex items-start space-x-3">
+    <Mailbox className="h-4 w-4 text-blue-400 mt-0.5 flex-shrink-0" aria-hidden="true" focusable="false" />
+    <div>
+      <a
+        href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(getSetting('company_address', '15 Monauk Hwy, Suite 112, Hampton Bays, NY 11946'))}`}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="text-slate-300 hover:text-blue-400 no-underline hover:no-underline"
+      >
+        {getSetting('company_address', '15 Monauk Hwy, Suite 112, Hampton Bays, NY 11946')}
       </a>
-    </div> 
+      <p className="text-xs text-slate-400 italic mt-1">(Mailing Address)</p>
+    </div>
+  </div> 
   </div>
 </div>    
           {/* Services */}
