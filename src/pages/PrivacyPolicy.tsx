@@ -147,7 +147,7 @@ const PrivacyPolicy: React.FC = () => {
 
             <div className="text-center pt-8 border-t border-slate-200">
               <p className="text-slate-500 text-sm">
-                Last Updated: April 8, 2025
+                Last Updated: April 27, 2026
               </p>
             </div>
           </div>

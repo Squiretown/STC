@@ -327,8 +327,8 @@ const ContactForm: React.FC<ContactFormProps> = ({
                 I agree to receive SMS/text messages from Squiretown Consulting, LLC.
               </span>{' '}
               Message types include{' '}
-              <span className="font-semibold">appointment confirmations, appointment reminders, follow-up messages</span>
-              {' '}and customer care responses.{' '}
+              <span className="font-semibold">appointment confirmations, appointment reminders, follow-up messages, and customer care responses</span>
+              .{' '}
               <span className="font-semibold">Message frequency varies. Message and data rates may apply.</span>{' '}
               Reply <span className="font-semibold">HELP</span> for help.
               Reply <span className="font-semibold">STOP</span> to cancel at any time.{' '}

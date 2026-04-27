@@ -113,8 +113,7 @@ const SmsTerms: React.FC = () => {
               <p className="text-slate-600 leading-relaxed">
                 Opting in to SMS/text messages is entirely voluntary.{' '}
                 <strong>
-                  Consent to receive SMS/text messages is not a condition of purchasing any
-                  product or service from Squiretown Consulting, LLC.
+                  Consent is not a condition of purchase or service from Squiretown Consulting, LLC.
                 </strong>{' '}
                 You may contact us by email or phone without opting in to text messages.
               </p>

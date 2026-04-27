@@ -141,7 +141,7 @@ const Footer: React.FC = () => {
         <div className="border-t border-slate-800 mt-12 pt-8">
           <div className="flex flex-col md:flex-row justify-between items-center">
             <p className="text-slate-400 text-sm">
-              © 2025 {getSetting('company_name', 'Squiretown Consulting')} LLC. All rights reserved.
+              © 2026 Squiretown Consulting, LLC. All rights reserved.
             </p>
             <div className="flex space-x-6 mt-4 md:mt-0">
               <Link to="/privacy" className="text-slate-400 hover:text-blue-400 text-sm transition-colors duration-200">
