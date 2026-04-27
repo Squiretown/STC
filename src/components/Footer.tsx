@@ -52,7 +52,7 @@ const Footer: React.FC = () => {
     <Mail className="h-4 w-4 text-blue-400" aria-hidden="true" focusable="false" />
     <a
       href={`mailto:${getSetting('company_email', 'info@squiretown.co')}`}
-      className="text-slate-300 hover:text-blue-400 underline underline-offset-2"
+      className="text-slate-300 hover:text-blue-400 no-underline hover:no-underline"
     >
       {getSetting('company_email', 'info@squiretown.co')}
     </a>
@@ -61,7 +61,7 @@ const Footer: React.FC = () => {
     <Phone className="h-4 w-4 text-blue-400" aria-hidden="true" focusable="false" />
     <a
       href={`tel:${getSetting('company_phone', '(555) 123-4567')}`}
-      className="text-slate-300 hover:text-blue-400 underline underline-offset-2"
+      className="text-slate-300 hover:text-blue-400 no-underline hover:no-underline"
     >
       {getSetting('company_phone', '(555) 123-4567')}
     </a>
@@ -72,7 +72,7 @@ const Footer: React.FC = () => {
       href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(getSetting('company_address', '15 Monauk Hwy, Suite 112, Hampton Bays, NY 11946'))}`}
       target="_blank"
       rel="noopener noreferrer"
-      className="text-slate-300 hover:text-blue-400 underline underline-offset-2"
+      className="text-slate-300 hover:text-blue-400 no-underline hover:no-underline"
     >
       {getSetting('company_address', '15 Monauk Hwy, Suite 112, Hampton Bays, NY 11946')}
       </a>
