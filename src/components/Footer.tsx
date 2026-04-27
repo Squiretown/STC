@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Building2, Mail, Phone, MapPin } from 'lucide-react';
+import { Building2, Mail, Phone, Mailbox } from 'lucide-react';
 import { useCMS } from '../hooks/useCMS';
 
 const Footer: React.FC = () => {
@@ -67,7 +67,7 @@ const Footer: React.FC = () => {
     </a>
   </div>
   <div className="flex items-center space-x-3">
-    <MapPin className="h-4 w-4 text-blue-400" aria-hidden="true" focusable="false" />
+    <Mailbox className="h-4 w-4 text-blue-400" aria-hidden="true" focusable="false" />
     <a
       href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(getSetting('company_address', '15 Monauk Hwy, Suite 112, Hampton Bays, NY 11946'))}`}
       target="_blank"
