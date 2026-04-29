@@ -1,13 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Menu, X, Building2 } from 'lucide-react';
+import { Menu, X, Building2, LogOut } from 'lucide-react';
 import { useCMS } from '../hooks/useCMS';
+import { useAuth } from '../hooks/useAuth';
 
 const Navbar: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const location = useLocation();
   const { getSetting } = useCMS();
+  const { user, signOut, isAuthenticated } = useAuth();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -82,6 +84,26 @@ const Navbar: React.FC = () => {
               Get Started
               </Link>
             </li>
+            {isAuthenticated && user && (
+              <li className="flex items-center space-x-3 pl-4 border-l border-slate-200">
+                <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0">
+                  <span className="text-sm font-medium text-blue-600">
+                    {user.email?.charAt(0).toUpperCase()}
+                  </span>
+                </div>
+                <div className="min-w-0">
+                  <p className="text-sm font-medium text-slate-700 truncate max-w-[140px]">{user.email}</p>
+                  <p className="text-xs text-slate-500">Administrator</p>
+                </div>
+                <button
+                  onClick={() => signOut()}
+                  className="p-1.5 text-slate-400 hover:text-red-600 transition-colors duration-200"
+                  title="Sign out"
+                >
+                  <LogOut className="h-4 w-4" />
+                </button>
+              </li>
+            )}
           </ul>
 
           {/* Mobile menu button */}
@@ -128,6 +150,30 @@ const Navbar: React.FC = () => {
                 Get Started
                 </Link>
               </li>
+              {isAuthenticated && user && (
+                <li role="none" className="mt-4 pt-4 border-t border-slate-200">
+                  <div className="flex items-center justify-between px-3 py-2">
+                    <div className="flex items-center space-x-3 min-w-0">
+                      <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0">
+                        <span className="text-sm font-medium text-blue-600">
+                          {user.email?.charAt(0).toUpperCase()}
+                        </span>
+                      </div>
+                      <div className="min-w-0">
+                        <p className="text-sm font-medium text-slate-700 truncate">{user.email}</p>
+                        <p className="text-xs text-slate-500">Administrator</p>
+                      </div>
+                    </div>
+                    <button
+                      onClick={() => { setIsOpen(false); signOut(); }}
+                      className="flex items-center text-slate-500 hover:text-red-600 text-sm transition-colors duration-200 ml-3"
+                      role="menuitem"
+                    >
+                      <LogOut className="h-4 w-4" />
+                    </button>
+                  </div>
+                </li>
+              )}
             </ul>
           </div>
         )}
