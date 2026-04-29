@@ -85,15 +85,11 @@ const Navbar: React.FC = () => {
               </Link>
             </li>
             {isAuthenticated && user && (
-              <li className="flex items-center space-x-3 pl-4 border-l border-slate-200">
+              <li className="flex items-center space-x-2 pl-4 border-l border-slate-200">
                 <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0">
                   <span className="text-sm font-medium text-blue-600">
                     {user.email?.charAt(0).toUpperCase()}
                   </span>
-                </div>
-                <div className="min-w-0">
-                  <p className="text-sm font-medium text-slate-700 truncate max-w-[140px]">{user.email}</p>
-                  <p className="text-xs text-slate-500">Administrator</p>
                 </div>
                 <button
                   onClick={() => signOut()}
@@ -152,24 +148,19 @@ const Navbar: React.FC = () => {
               </li>
               {isAuthenticated && user && (
                 <li role="none" className="mt-4 pt-4 border-t border-slate-200">
-                  <div className="flex items-center justify-between px-3 py-2">
-                    <div className="flex items-center space-x-3 min-w-0">
-                      <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0">
-                        <span className="text-sm font-medium text-blue-600">
-                          {user.email?.charAt(0).toUpperCase()}
-                        </span>
-                      </div>
-                      <div className="min-w-0">
-                        <p className="text-sm font-medium text-slate-700 truncate">{user.email}</p>
-                        <p className="text-xs text-slate-500">Administrator</p>
-                      </div>
+                  <div className="flex items-center space-x-3 px-3 py-2">
+                    <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0">
+                      <span className="text-sm font-medium text-blue-600">
+                        {user.email?.charAt(0).toUpperCase()}
+                      </span>
                     </div>
                     <button
                       onClick={() => { setIsOpen(false); signOut(); }}
-                      className="flex items-center text-slate-500 hover:text-red-600 text-sm transition-colors duration-200 ml-3"
+                      className="flex items-center text-slate-500 hover:text-red-600 text-sm transition-colors duration-200"
                       role="menuitem"
                     >
-                      <LogOut className="h-4 w-4" />
+                      <LogOut className="h-4 w-4 mr-1" />
+                      Sign out
                     </button>
                   </div>
                 </li>

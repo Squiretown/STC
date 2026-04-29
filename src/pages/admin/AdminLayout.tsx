@@ -1,23 +1,16 @@
 import React, { useState } from 'react';
 import { Link, useLocation, Outlet } from 'react-router-dom';
-import { Building2, Users, FileText, Settings, LogOut, Menu, X, Briefcase } from 'lucide-react';
-import { useAuth } from '../../hooks/useAuth';
+import { Building2, Users, FileText, Settings, Menu, X, Briefcase } from 'lucide-react';
 
 const AdminLayout: React.FC = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const location = useLocation();
-  const { user, signOut } = useAuth();
-
   const navigation = [
     { name: 'Leads', href: '/admin', icon: Users },
     { name: 'Projects', href: '/admin/projects', icon: Briefcase },
     { name: 'Content', href: '/admin/content', icon: FileText },
     { name: 'Settings', href: '/admin/settings', icon: Settings },
   ];
-
-  const handleSignOut = async () => {
-    await signOut();
-  };
 
   return (
     <div className="min-h-screen bg-slate-50 flex">
@@ -74,31 +67,6 @@ const AdminLayout: React.FC = () => {
           </ul>
         </nav>
 
-        {/* User info and logout */}
-        <div className="absolute bottom-0 left-0 right-0 p-4 border-t border-slate-200">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-3">
-              <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
-                <span className="text-sm font-medium text-blue-600">
-                  {user?.email?.charAt(0).toUpperCase()}
-                </span>
-              </div>
-              <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium text-slate-700 truncate">
-                  {user?.email}
-                </p>
-                <p className="text-xs text-slate-500">Administrator</p>
-              </div>
-            </div>
-            <button
-              onClick={handleSignOut}
-              className="p-2 text-slate-400 hover:text-red-600 transition-colors duration-200"
-              title="Sign out"
-            >
-              <LogOut className="h-4 w-4" />
-            </button>
-          </div>
-        </div>
       </div>
 
       {/* Main content */}
