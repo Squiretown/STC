@@ -1,0 +1,664 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Squiretown Consulting — Build smarter systems for the way your business works</title>
+<meta name="description" content="Squiretown Consulting turns scattered tools, manual workflows, and emerging AI into clean, scalable software and automation systems. Strategy to shipped systems for real business teams.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Inter+Tight:wght@500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    /* Color tokens */
+    --navy-900: #0a0f1f;
+    --navy-800: #0d1426;
+    --navy-700: #131c31;
+    --navy-600: #1a2540;
+    --line-dark: rgba(255,255,255,0.08);
+    --line-dark-strong: rgba(255,255,255,0.14);
+
+    --white: #ffffff;
+    --paper: #f7f9fc;
+    --ink-900: #0a0f1f;
+    --ink-600: #475569;
+    --ink-500: #64748b;
+    --line: #e6ebf2;
+
+    --blue-500: #2563eb;
+    --blue-600: #1d4ed8;
+    --blue-glow: rgba(37,99,235,0.45);
+    --blue-soft: rgba(37,99,235,0.10);
+
+    --slate-300: #cbd5e1;
+    --slate-400: #94a3b8;
+    --green: #16a34a;
+    --green-bright: #22c55e;
+
+    /* Type */
+    --display: 'Inter Tight', system-ui, sans-serif;
+    --body: 'Inter', system-ui, sans-serif;
+
+    /* Layout */
+    --maxw: 1200px;
+    --radius: 14px;
+    --radius-sm: 10px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+
+  body {
+    font-family: var(--body);
+    color: var(--ink-900);
+    background: var(--white);
+    line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  a { color: inherit; text-decoration: none; }
+  .container { width: 100%; max-width: var(--maxw); margin: 0 auto; padding: 0 28px; }
+  .eyebrow {
+    font-family: var(--body);
+    font-weight: 600;
+    font-size: 12px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--blue-500);
+  }
+  :focus-visible { outline: 2px solid var(--blue-500); outline-offset: 3px; border-radius: 4px; }
+
+  /* ---------- Buttons ---------- */
+  .btn {
+    display: inline-flex; align-items: center; gap: 9px;
+    font-family: var(--body); font-weight: 600; font-size: 15px;
+    padding: 13px 20px; border-radius: var(--radius-sm);
+    border: 1px solid transparent; cursor: pointer;
+    transition: transform .15s ease, box-shadow .15s ease, background .15s ease, border-color .15s ease;
+  }
+  .btn .arrow { transition: transform .2s ease; }
+  .btn:hover .arrow { transform: translateX(3px); }
+  .btn-primary { background: var(--blue-500); color: #fff; box-shadow: 0 8px 24px -10px var(--blue-glow); }
+  .btn-primary:hover { background: var(--blue-600); transform: translateY(-1px); box-shadow: 0 12px 30px -10px var(--blue-glow); }
+  .btn-ghost-dark { background: transparent; color: var(--ink-900); border-color: var(--line); }
+  .btn-ghost-dark:hover { border-color: var(--ink-900); transform: translateY(-1px); }
+  .btn-ghost-light { background: rgba(255,255,255,0.04); color: #fff; border-color: var(--line-dark-strong); }
+  .btn-ghost-light:hover { background: rgba(255,255,255,0.09); }
+
+  /* ---------- Nav ---------- */
+  .nav {
+    position: sticky; top: 0; z-index: 50;
+    background: rgba(255,255,255,0.86);
+    backdrop-filter: saturate(160%) blur(12px);
+    border-bottom: 1px solid transparent;
+    transition: border-color .2s ease, box-shadow .2s ease;
+  }
+  .nav.scrolled { border-bottom-color: var(--line); box-shadow: 0 4px 20px -16px rgba(10,15,31,0.5); }
+  .nav-inner { display: flex; align-items: center; justify-content: space-between; height: 72px; }
+  .brand { display: flex; align-items: center; gap: 12px; }
+  .brand .mark {
+    width: 38px; height: 38px; border-radius: 9px;
+    background: var(--navy-900); color: #fff;
+    display: grid; place-items: center;
+    font-family: var(--display); font-weight: 800; font-size: 13px; letter-spacing: 0.04em;
+    border: 1px solid var(--line-dark-strong);
+  }
+  .brand .name { font-family: var(--display); font-weight: 700; font-size: 17px; letter-spacing: 0.02em; color: var(--ink-900); }
+  .brand .name span { display: block; font-family: var(--body); font-weight: 600; font-size: 9px; letter-spacing: 0.32em; color: var(--ink-500); margin-top: 1px; }
+  .nav-links { display: flex; align-items: center; gap: 30px; }
+  .nav-links a { font-weight: 500; font-size: 15px; color: var(--ink-600); transition: color .15s ease; }
+  .nav-links a:hover { color: var(--ink-900); }
+  .nav-cta { display: flex; align-items: center; gap: 14px; }
+  .nav-toggle { display: none; }
+
+  /* ---------- Hero ---------- */
+  .hero { padding: 76px 0 64px; overflow: hidden; }
+  .hero-grid { display: grid; grid-template-columns: 1.05fr 1.25fr; gap: 56px; align-items: center; }
+  .hero-copy .eyebrow { margin-bottom: 18px; }
+  .hero h1 {
+    font-family: var(--display); font-weight: 800;
+    font-size: clamp(40px, 5vw, 62px); line-height: 1.02; letter-spacing: -0.02em;
+    color: var(--ink-900);
+  }
+  .hero p.lead { margin-top: 22px; font-size: 18px; line-height: 1.6; color: var(--ink-600); max-width: 480px; }
+  .hero-actions { margin-top: 32px; display: flex; gap: 14px; flex-wrap: wrap; }
+
+  /* ---------- Dashboard signature ---------- */
+  .dash {
+    position: relative;
+    background: linear-gradient(180deg, var(--navy-800), var(--navy-900));
+    border: 1px solid var(--line-dark-strong);
+    border-radius: 18px; overflow: hidden;
+    box-shadow: 0 40px 80px -40px rgba(10,15,31,0.55), 0 0 0 1px rgba(255,255,255,0.02) inset;
+    color: #fff;
+  }
+  .dash::after { /* ambient glow */
+    content: ""; position: absolute; top: -120px; right: -80px; width: 320px; height: 320px;
+    background: radial-gradient(circle, var(--blue-glow), transparent 65%); opacity: .5; pointer-events: none;
+  }
+  .dash-top { display: flex; align-items: center; justify-content: space-between; padding: 14px 16px; border-bottom: 1px solid var(--line-dark); }
+  .dash-brand { display: flex; align-items: center; gap: 9px; font-family: var(--display); font-weight: 700; font-size: 12px; letter-spacing: 0.04em; }
+  .dash-brand .dot { width: 22px; height: 22px; border-radius: 6px; background: var(--blue-500); display: grid; place-items: center; font-size: 9px; }
+  .dash-top-right { display: flex; align-items: center; gap: 12px; }
+  .bell { position: relative; width: 28px; height: 28px; border-radius: 7px; background: rgba(255,255,255,0.05); display: grid; place-items: center; font-size: 12px; }
+  .bell b { position: absolute; top: -4px; right: -4px; background: var(--blue-500); font-size: 9px; width: 15px; height: 15px; border-radius: 50%; display: grid; place-items: center; font-weight: 700; }
+  .avatar { width: 28px; height: 28px; border-radius: 50%; background: linear-gradient(135deg, var(--blue-500), #6d28d9); display: grid; place-items: center; font-size: 10px; font-weight: 700; }
+  .dash-body { display: grid; grid-template-columns: 120px 1fr; min-height: 360px; }
+  .dash-side { border-right: 1px solid var(--line-dark); padding: 14px 10px; display: flex; flex-direction: column; gap: 3px; }
+  .dash-side a { display: flex; align-items: center; gap: 9px; font-size: 12px; color: var(--slate-400); padding: 8px 9px; border-radius: 8px; }
+  .dash-side a .ic { width: 14px; text-align: center; opacity: .8; }
+  .dash-side a.active { background: rgba(37,99,235,0.16); color: #fff; }
+  .dash-main { padding: 16px; }
+  .dash-h { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
+  .dash-h h3 { font-family: var(--display); font-weight: 700; font-size: 14px; }
+  .date-pill { font-size: 11px; color: var(--slate-300); background: rgba(255,255,255,0.05); border: 1px solid var(--line-dark); padding: 5px 11px; border-radius: 20px; }
+  .metrics { display: grid; grid-template-columns: repeat(3, 1fr); gap: 9px; }
+  .metric { background: rgba(255,255,255,0.035); border: 1px solid var(--line-dark); border-radius: 11px; padding: 11px; }
+  .metric .label { display: flex; align-items: center; gap: 6px; font-size: 10.5px; color: var(--slate-400); }
+  .metric .label .sq { width: 13px; height: 13px; border-radius: 4px; background: var(--blue-soft); display: grid; place-items: center; font-size: 8px; }
+  .metric .val { font-family: var(--display); font-weight: 700; font-size: 21px; margin-top: 8px; letter-spacing: -0.01em; }
+  .metric .delta { font-size: 10px; color: var(--green-bright); margin-top: 2px; }
+  .metric .sub { font-size: 9px; color: var(--ink-500); margin-top: 1px; }
+  .dash-lower { display: grid; grid-template-columns: 1.6fr 1fr; gap: 9px; margin-top: 9px; }
+  .panel { background: rgba(255,255,255,0.035); border: 1px solid var(--line-dark); border-radius: 11px; padding: 12px; }
+  .panel h4 { font-size: 11px; color: var(--slate-300); font-weight: 600; margin-bottom: 8px; }
+  .chart { width: 100%; height: 92px; }
+  .chart path.line { fill: none; stroke: var(--blue-500); stroke-width: 2.4; stroke-linecap: round; stroke-linejoin: round; }
+  .feed-item { display: flex; align-items: center; gap: 8px; font-size: 10.5px; color: var(--slate-300); padding: 6px 0; }
+  .feed-item:not(:last-child) { border-bottom: 1px solid var(--line-dark); }
+  .feed-item .tick { color: var(--green-bright); }
+  .feed-item .ago { margin-left: auto; color: var(--ink-500); font-size: 9.5px; }
+
+  /* ---------- Trust bar ---------- */
+  .trust { background: var(--navy-900); color: #fff; }
+  .trust-inner { display: grid; grid-template-columns: repeat(3, 1fr); }
+  .trust-item { display: flex; align-items: center; gap: 14px; padding: 26px 8px; }
+  .trust-item:not(:last-child) { border-right: 1px solid var(--line-dark); }
+  .trust-item .tic { width: 40px; height: 40px; border-radius: 10px; background: rgba(37,99,235,0.16); color: #7aa2ff; display: grid; place-items: center; font-size: 17px; flex-shrink: 0; }
+  .trust-item span { font-family: var(--display); font-weight: 600; font-size: 15px; }
+
+  /* ---------- Capabilities + Work ---------- */
+  .build { padding: 84px 0; background: var(--white); }
+  .build-grid { display: grid; grid-template-columns: 1.55fr 1fr; gap: 56px; }
+  .cap-head { margin-bottom: 30px; }
+  .cap-head h2 { font-family: var(--display); font-weight: 800; font-size: clamp(28px, 3.4vw, 40px); line-height: 1.08; letter-spacing: -0.02em; margin-top: 12px; max-width: 460px; }
+  .cap-cards { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .cap-card {
+    border: 1px solid var(--line); border-radius: var(--radius); padding: 22px;
+    background: var(--white); transition: border-color .18s ease, transform .18s ease, box-shadow .18s ease;
+  }
+  .cap-card:hover { border-color: var(--blue-500); transform: translateY(-3px); box-shadow: 0 18px 40px -28px rgba(37,99,235,0.5); }
+  .cap-card .cic { width: 38px; height: 38px; border-radius: 10px; background: var(--blue-soft); color: var(--blue-500); display: grid; place-items: center; font-size: 18px; margin-bottom: 14px; }
+  .cap-card h3 { font-family: var(--display); font-weight: 700; font-size: 17px; }
+  .cap-card p { font-size: 13.5px; color: var(--ink-600); margin-top: 7px; line-height: 1.55; }
+  .cap-card .more { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 600; color: var(--blue-500); margin-top: 13px; }
+  .cap-card .more .arrow { transition: transform .2s ease; }
+  .cap-card:hover .more .arrow { transform: translateX(3px); }
+
+  .work-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
+  .work-head .eyebrow { margin: 0; }
+  .work-head a { font-size: 13px; font-weight: 600; color: var(--blue-500); display: inline-flex; gap: 5px; align-items: center; }
+  .work-note { font-size: 11.5px; color: var(--ink-500); margin-bottom: 16px; }
+  .work-item { display: flex; gap: 14px; padding: 18px 0; border-bottom: 1px solid var(--line); cursor: default; }
+  .work-item:first-of-type { border-top: 1px solid var(--line); }
+  .work-item .wic { width: 38px; height: 38px; border-radius: 9px; background: var(--paper); color: var(--ink-900); display: grid; place-items: center; font-size: 16px; flex-shrink: 0; border: 1px solid var(--line); transition: background .18s ease, color .18s ease; }
+  .work-item:hover .wic { background: var(--blue-500); color: #fff; }
+  .work-item h4 { font-family: var(--display); font-weight: 700; font-size: 15px; }
+  .work-item p { font-size: 12.5px; color: var(--ink-600); margin-top: 3px; line-height: 1.45; }
+  .work-item .result { font-size: 12px; font-weight: 600; color: var(--green); margin-top: 6px; }
+
+  /* ---------- CTA / form ---------- */
+  .cta { background: linear-gradient(180deg, var(--navy-800), var(--navy-900)); color: #fff; }
+  .cta-grid { display: grid; grid-template-columns: 1fr 1.05fr; gap: 56px; padding: 76px 0; align-items: start; }
+  .cta-copy .eyebrow { color: #7aa2ff; margin-bottom: 14px; }
+  .cta-copy h2 { font-family: var(--display); font-weight: 800; font-size: clamp(30px, 3.6vw, 42px); line-height: 1.06; letter-spacing: -0.02em; }
+  .cta-copy > p { color: var(--slate-300); margin-top: 16px; font-size: 16px; max-width: 420px; }
+  .steps { margin-top: 30px; display: flex; flex-direction: column; gap: 18px; }
+  .step { display: flex; gap: 14px; align-items: flex-start; }
+  .step .sic { width: 38px; height: 38px; border-radius: 10px; background: rgba(37,99,235,0.16); color: #7aa2ff; display: grid; place-items: center; font-size: 16px; flex-shrink: 0; }
+  .step h5 { font-family: var(--display); font-weight: 700; font-size: 15px; }
+  .step p { color: var(--slate-400); font-size: 13px; margin-top: 2px; }
+
+  .form-card { background: var(--white); border-radius: 16px; padding: 28px; color: var(--ink-900); box-shadow: 0 40px 80px -40px rgba(0,0,0,0.5); }
+  .form-card h3 { font-family: var(--display); font-weight: 700; font-size: 18px; margin-bottom: 4px; }
+  .form-card .fsub { font-size: 13px; color: var(--ink-600); margin-bottom: 20px; }
+  .field { margin-bottom: 15px; }
+  .field label { display: block; font-size: 13px; font-weight: 600; margin-bottom: 6px; }
+  .field label .req { color: var(--blue-500); }
+  .field .opt { font-weight: 400; color: var(--ink-500); }
+  .field input, .field select {
+    width: 100%; font-family: var(--body); font-size: 14px; color: var(--ink-900);
+    padding: 12px 13px; border: 1px solid var(--line); border-radius: var(--radius-sm); background: var(--paper);
+    transition: border-color .15s ease, box-shadow .15s ease, background .15s ease;
+  }
+  .field input::placeholder { color: var(--ink-500); }
+  .field input:focus, .field select:focus { outline: none; border-color: var(--blue-500); background: #fff; box-shadow: 0 0 0 3px var(--blue-soft); }
+  .field.row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  .field.row2 > div { margin: 0; }
+  .field.error input, .field.error select { border-color: #dc2626; }
+  .err-msg { color: #dc2626; font-size: 12px; margin-top: 5px; display: none; }
+  .field.error .err-msg { display: block; }
+  .form-card .btn-primary { width: 100%; justify-content: center; margin-top: 6px; }
+  .secure { display: flex; align-items: center; gap: 7px; font-size: 12px; color: var(--ink-500); margin-top: 14px; }
+  .form-success { display: none; text-align: center; padding: 30px 10px; }
+  .form-success.show { display: block; }
+  .form-success .big { width: 52px; height: 52px; border-radius: 50%; background: var(--blue-soft); color: var(--blue-500); display: grid; place-items: center; font-size: 24px; margin: 0 auto 16px; }
+  .form-success h3 { font-family: var(--display); font-weight: 700; font-size: 19px; }
+  .form-success p { font-size: 14px; color: var(--ink-600); margin-top: 8px; }
+
+  /* ---------- Footer ---------- */
+  footer { background: var(--navy-900); color: var(--slate-400); padding: 44px 0 30px; border-top: 1px solid var(--line-dark); }
+  .foot-grid { display: flex; justify-content: space-between; gap: 40px; flex-wrap: wrap; align-items: flex-start; }
+  .foot-brand .name { font-family: var(--display); font-weight: 700; font-size: 16px; color: #fff; letter-spacing: 0.02em; }
+  .foot-brand .addr { font-size: 12.5px; line-height: 1.6; margin-top: 10px; max-width: 240px; }
+  .foot-brand .addr .tag { color: var(--ink-500); font-size: 11px; text-transform: uppercase; letter-spacing: 0.08em; display: block; margin-bottom: 2px; }
+  .foot-cols { display: flex; gap: 56px; }
+  .foot-col h6 { color: #fff; font-size: 12px; letter-spacing: 0.06em; text-transform: uppercase; margin-bottom: 12px; font-weight: 600; }
+  .foot-col a, .foot-col span { display: block; font-size: 13px; padding: 4px 0; color: var(--slate-400); }
+  .foot-col a:hover { color: #fff; }
+  .foot-col span.static { cursor: default; }
+  .foot-bottom { margin-top: 36px; padding-top: 20px; border-top: 1px solid var(--line-dark); display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap; font-size: 12px; }
+  .foot-bottom a:hover { color: #fff; }
+
+  /* ---------- Responsive ---------- */
+  @media (max-width: 940px) {
+    .hero-grid, .build-grid, .cta-grid { grid-template-columns: 1fr; gap: 40px; }
+    .nav-links { display: none; }
+    .dash-body { grid-template-columns: 1fr; }
+    .dash-side { display: none; }
+    .metrics { grid-template-columns: repeat(3, 1fr); }
+  }
+  @media (max-width: 620px) {
+    .container { padding: 0 20px; }
+    .trust-inner { grid-template-columns: 1fr; }
+    .trust-item:not(:last-child) { border-right: none; border-bottom: 1px solid var(--line-dark); }
+    .cap-cards { grid-template-columns: 1fr; }
+    .metrics { grid-template-columns: 1fr 1fr; }
+    .field.row2 { grid-template-columns: 1fr; }
+    .nav-cta .btn span.lbl { display: none; }
+    .hero { padding: 48px 0 40px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<header class="nav" id="nav">
+  <div class="container nav-inner">
+    <a class="brand" href="#top" aria-label="Squiretown Consulting home">
+      <div class="mark">STC</div>
+      <div class="name">SQUIRETOWN<span>CONSULTING</span></div>
+    </a>
+    <nav class="nav-links" aria-label="Primary">
+      <a href="#work">Work</a>
+      <a href="#capabilities">Capabilities</a>
+      <a href="#capabilities">Platforms</a>
+      <a href="#contact">Contact</a>
+    </nav>
+    <div class="nav-cta">
+      <a class="btn btn-primary" href="#contact"><span class="lbl">Start a Conversation</span><span class="arrow">→</span></a>
+    </div>
+  </div>
+</header>
+
+<main id="top">
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="container hero-grid">
+      <div class="hero-copy">
+        <div class="eyebrow">Strategy. Automation. Software that works.</div>
+        <h1>Build smarter systems for the way your business works.</h1>
+        <p class="lead">Squiretown Consulting helps companies turn scattered tools, manual workflows, and emerging AI opportunities into clean, scalable software and automation systems.</p>
+        <div class="hero-actions">
+          <a class="btn btn-primary" href="#contact">Start a Conversation <span class="arrow">→</span></a>
+          <a class="btn btn-ghost-dark" href="#work">See Our Work <span class="arrow">→</span></a>
+        </div>
+      </div>
+
+      <!-- Signature: live operating dashboard -->
+      <div class="dash" role="img" aria-label="Sample operating dashboard showing automation, workflow, and growth metrics">
+        <div class="dash-top">
+          <div class="dash-brand"><span class="dot">◆</span> SQUIRETOWN</div>
+          <div class="dash-top-right">
+            <div class="bell">🔔<b>2</b></div>
+            <div class="avatar">ST</div>
+          </div>
+        </div>
+        <div class="dash-body">
+          <aside class="dash-side">
+            <a class="active"><span class="ic">▦</span> Overview</a>
+            <a><span class="ic">⚙</span> Workflows</a>
+            <a><span class="ic">⚡</span> Automation</a>
+            <a><span class="ic">▤</span> Data</a>
+            <a><span class="ic">▧</span> Tools</a>
+            <a><span class="ic">▣</span> Reports</a>
+            <a><span class="ic">⚙</span> Settings</a>
+          </aside>
+          <div class="dash-main">
+            <div class="dash-h">
+              <h3>Operating Overview</h3>
+              <div class="date-pill">Last 30 days</div>
+            </div>
+            <div class="metrics">
+              <div class="metric"><div class="label"><span class="sq">◆</span> AI Automation</div><div class="val" data-count="128">0</div><div class="delta">↑ 18%</div><div class="sub">Active automations</div></div>
+              <div class="metric"><div class="label"><span class="sq">✶</span> Workflows</div><div class="val" data-count="342">0</div><div class="delta">↑ 24%</div><div class="sub">Running</div></div>
+              <div class="metric"><div class="label"><span class="sq">▣</span> Operations</div><div class="val" data-count="1842">0</div><div class="delta">↑ 16%</div><div class="sub">Tasks completed</div></div>
+              <div class="metric"><div class="label"><span class="sq">▤</span> Data Refreshes</div><div class="val" data-count="96">0</div><div class="delta">↑ 21%</div><div class="sub">This period</div></div>
+              <div class="metric"><div class="label"><span class="sq">▧</span> Internal Tools</div><div class="val" data-count="28">0</div><div class="delta">↑ 12%</div><div class="sub">Active</div></div>
+              <div class="metric"><div class="label"><span class="sq">↗</span> Growth Systems</div><div class="val" data-count="3.6" data-prefix="$" data-suffix="M">0</div><div class="delta">↑ 19%</div><div class="sub">Pipeline contribution</div></div>
+            </div>
+            <div class="dash-lower">
+              <div class="panel">
+                <h4>Performance Overview</h4>
+                <svg class="chart" viewBox="0 0 300 92" preserveAspectRatio="none" aria-hidden="true">
+                  <defs>
+                    <linearGradient id="cf" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="0%" stop-color="#2563eb" stop-opacity="0.32"/>
+                      <stop offset="100%" stop-color="#2563eb" stop-opacity="0"/>
+                    </linearGradient>
+                  </defs>
+                  <path class="area" d="M0,72 L30,66 L60,70 L90,54 L120,58 L150,42 L180,46 L210,30 L240,36 L270,20 L300,24 L300,92 L0,92 Z" fill="url(#cf)"/>
+                  <path class="line" d="M0,72 L30,66 L60,70 L90,54 L120,58 L150,42 L180,46 L210,30 L240,36 L270,20 L300,24"/>
+                </svg>
+              </div>
+              <div class="panel">
+                <h4>Recent Activity</h4>
+                <div class="feed-item"><span class="tick">●</span> New workflow published <span class="ago">2m</span></div>
+                <div class="feed-item"><span class="tick">●</span> Data pipeline refreshed <span class="ago">8m</span></div>
+                <div class="feed-item"><span class="tick">●</span> Lead routed to sales <span class="ago">21m</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- TRUST BAR -->
+  <section class="trust">
+    <div class="container trust-inner">
+      <div class="trust-item"><div class="tic">◎</div><span>Strategy to shipped systems</span></div>
+      <div class="trust-item"><div class="tic">⚡</div><span>AI-ready operations</span></div>
+      <div class="trust-item"><div class="tic">◍</div><span>Built for real business teams</span></div>
+    </div>
+  </section>
+
+  <!-- CAPABILITIES + SELECTED WORK -->
+  <section class="build" id="capabilities">
+    <div class="container build-grid">
+      <div>
+        <div class="cap-head">
+          <div class="eyebrow">Capabilities</div>
+          <h2>End-to-end support for how you build and grow.</h2>
+        </div>
+        <div class="cap-cards">
+          <div class="cap-card">
+            <div class="cic">◆</div>
+            <h3>AI &amp; Automation</h3>
+            <p>Identify where AI fits, then deploy it to cut time, reduce cost, and improve outcomes.</p>
+            <a class="more" href="#contact">Learn more <span class="arrow">→</span></a>
+          </div>
+          <div class="cap-card">
+            <div class="cic">▤</div>
+            <h3>Custom Software</h3>
+            <p>Secure, scalable applications built around your business and your customers.</p>
+            <a class="more" href="#contact">Learn more <span class="arrow">→</span></a>
+          </div>
+          <div class="cap-card">
+            <div class="cic">⇄</div>
+            <h3>Workflow Design</h3>
+            <p>Map and automate the processes that quietly eat hours, so your team stops repeating itself.</p>
+            <a class="more" href="#contact">Learn more <span class="arrow">→</span></a>
+          </div>
+          <div class="cap-card">
+            <div class="cic">▦</div>
+            <h3>Data &amp; Reporting</h3>
+            <p>Turn raw data into dashboards and metrics people actually use to decide.</p>
+            <a class="more" href="#contact">Learn more <span class="arrow">→</span></a>
+          </div>
+          <div class="cap-card">
+            <div class="cic">◍</div>
+            <h3>CRM &amp; Operations</h3>
+            <p>Systems that improve the customer experience and the way the work gets done.</p>
+            <a class="more" href="#contact">Learn more <span class="arrow">→</span></a>
+          </div>
+          <div class="cap-card">
+            <div class="cic">✦</div>
+            <h3>Product Strategy</h3>
+            <p>Validate ideas, define the roadmap, and build products that move the business.</p>
+            <a class="more" href="#contact">Learn more <span class="arrow">→</span></a>
+          </div>
+        </div>
+      </div>
+
+      <div id="work">
+        <div class="work-head">
+          <div class="eyebrow">Selected Work</div>
+          <a href="#contact">View all work <span class="arrow">→</span></a>
+        </div>
+        <p class="work-note">Representative outcomes from recent builds.</p>
+
+        <div class="work-item">
+          <div class="wic">⚡</div>
+          <div>
+            <h4>Automation Platform</h4>
+            <p>End-to-end automation for a high-volume service business.</p>
+            <div class="result">Result: 65% fewer manual hours</div>
+          </div>
+        </div>
+        <div class="work-item">
+          <div class="wic">▤</div>
+          <div>
+            <h4>Customer Portal</h4>
+            <p>Self-serve portal that lifted satisfaction and cut support load.</p>
+            <div class="result">Result: 40% fewer support tickets</div>
+          </div>
+        </div>
+        <div class="work-item">
+          <div class="wic">▦</div>
+          <div>
+            <h4>Data &amp; Reporting Hub</h4>
+            <p>Unified dashboards for real-time, organization-wide visibility.</p>
+            <div class="result">Result: Real-time decisions across teams</div>
+          </div>
+        </div>
+        <div class="work-item">
+          <div class="wic">▧</div>
+          <div>
+            <h4>Internal Tools Suite</h4>
+            <p>Custom tools that streamlined operations and saved time.</p>
+            <div class="result">Result: 3 tools, 1 unified workflow</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA / FORM -->
+  <section class="cta" id="contact">
+    <div class="container cta-grid">
+      <div class="cta-copy">
+        <div class="eyebrow">Let's build together</div>
+        <h2>Ready to build smarter systems?</h2>
+        <p>Tell us about your goals and we'll map a plan to streamline, automate, and scale your business.</p>
+        <div class="steps">
+          <div class="step"><div class="sic">◎</div><div><h5>Clarify goals</h5><p>We align on the outcomes that matter.</p></div></div>
+          <div class="step"><div class="sic">⇄</div><div><h5>Map the path</h5><p>You get a clear plan and next steps.</p></div></div>
+          <div class="step"><div class="sic">✦</div><div><h5>Build &amp; deliver</h5><p>We build, iterate, and ship real results.</p></div></div>
+        </div>
+      </div>
+
+      <div class="form-card">
+        <form id="leadForm" novalidate>
+          <h3>Start a Conversation</h3>
+          <p class="fsub">We usually reply within one business day.</p>
+
+          <div class="field" id="f-name">
+            <label for="fullname">Full name <span class="req">*</span></label>
+            <input type="text" id="fullname" name="fullname" placeholder="Your name" autocomplete="name">
+            <div class="err-msg">Please enter your name.</div>
+          </div>
+
+          <div class="field row2">
+            <div id="f-email">
+              <label for="email">Work email <span class="req">*</span></label>
+              <input type="email" id="email" name="email" placeholder="you@company.com" autocomplete="email">
+              <div class="err-msg">Please enter a valid email.</div>
+            </div>
+            <div id="f-phone">
+              <label for="phone">Phone <span class="opt">(optional)</span></label>
+              <input type="tel" id="phone" name="phone" placeholder="(631) 555-0123" autocomplete="tel">
+            </div>
+          </div>
+
+          <div class="field">
+            <label for="company">Company</label>
+            <input type="text" id="company" name="company" placeholder="Your company" autocomplete="organization">
+          </div>
+
+          <div class="field" id="f-goal">
+            <label for="goal">What are you looking to achieve?</label>
+            <select id="goal" name="goal">
+              <option value="" selected>Select a goal</option>
+              <option>Automate manual workflows</option>
+              <option>Build custom software</option>
+              <option>Integrate AI into operations</option>
+              <option>Unify data &amp; reporting</option>
+              <option>Improve CRM &amp; operations</option>
+              <option>Not sure yet — let's talk</option>
+            </select>
+          </div>
+
+          <button type="submit" class="btn btn-primary">Start a Conversation <span class="arrow">→</span></button>
+          <div class="secure">🔒 Your information is secure and never shared.</div>
+        </form>
+
+        <div class="form-success" id="formSuccess">
+          <div class="big">✓</div>
+          <h3>Thanks — we've got it.</h3>
+          <p>We'll review your goals and reach out within one business day.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<!-- FOOTER -->
+<footer>
+  <div class="container">
+    <div class="foot-grid">
+      <div class="foot-brand">
+        <div class="name">SQUIRETOWN CONSULTING, LLC</div>
+        <div class="addr">
+          <span class="tag">Mailing address</span>
+          15 W Montauk Hwy, Ste 112<br>
+          Hampton Bays, NY 11946<br>
+          <span style="font-size:11px;color:var(--ink-500);">By appointment — not a walk-in office.</span>
+        </div>
+      </div>
+      <div class="foot-cols">
+        <div class="foot-col">
+          <h6>Company</h6>
+          <a href="#capabilities">Capabilities</a>
+          <a href="#work">Work</a>
+          <a href="#contact">Contact</a>
+        </div>
+        <div class="foot-col">
+          <h6>Get in touch</h6>
+          <span class="static">Use the contact form</span>
+          <span class="static">info@squiretown.co</span>
+        </div>
+      </div>
+    </div>
+    <div class="foot-bottom">
+      <div>© 2026 Squiretown Consulting, LLC. All rights reserved.</div>
+      <div><a href="#">Privacy Policy</a> &nbsp;·&nbsp; <a href="#">Terms of Service</a></div>
+    </div>
+  </div>
+</footer>
+
+<script>
+  // Nav shadow on scroll
+  const nav = document.getElementById('nav');
+  const onScroll = () => nav.classList.toggle('scrolled', window.scrollY > 8);
+  onScroll();
+  window.addEventListener('scroll', onScroll, { passive: true });
+
+  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  // Count-up for dashboard metrics
+  function countUp(el) {
+    const target = parseFloat(el.dataset.count);
+    const prefix = el.dataset.prefix || '';
+    const suffix = el.dataset.suffix || '';
+    const decimals = (el.dataset.count.indexOf('.') > -1) ? 1 : 0;
+    if (reduce) {
+      el.textContent = prefix + target.toLocaleString(undefined, {minimumFractionDigits: decimals, maximumFractionDigits: decimals}) + suffix;
+      return;
+    }
+    const dur = 1100, start = performance.now();
+    function tick(now) {
+      const p = Math.min((now - start) / dur, 1);
+      const eased = 1 - Math.pow(1 - p, 3);
+      const v = target * eased;
+      el.textContent = prefix + v.toLocaleString(undefined, {minimumFractionDigits: decimals, maximumFractionDigits: decimals}) + suffix;
+      if (p < 1) requestAnimationFrame(tick);
+    }
+    requestAnimationFrame(tick);
+  }
+
+  // Animate chart line draw
+  function drawChart() {
+    const line = document.querySelector('.chart .line');
+    if (!line || reduce) return;
+    const len = line.getTotalLength();
+    line.style.strokeDasharray = len;
+    line.style.strokeDashoffset = len;
+    line.getBoundingClientRect();
+    line.style.transition = 'stroke-dashoffset 1.4s ease';
+    line.style.strokeDashoffset = '0';
+  }
+
+  // Trigger animations when dashboard is in view
+  const dash = document.querySelector('.dash');
+  let played = false;
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting && !played) {
+        played = true;
+        document.querySelectorAll('.metric .val[data-count]').forEach(countUp);
+        drawChart();
+        io.disconnect();
+      }
+    });
+  }, { threshold: 0.4 });
+  if (dash) io.observe(dash);
+
+  // Form validation + success
+  const form = document.getElementById('leadForm');
+  const success = document.getElementById('formSuccess');
+  function setError(id, on) { document.getElementById(id).classList.toggle('error', on); }
+
+  form.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const name = document.getElementById('fullname').value.trim();
+    const email = document.getElementById('email').value.trim();
+    const emailOk = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+    let ok = true;
+    if (!name) { setError('f-name', true); ok = false; } else setError('f-name', false);
+    if (!emailOk) { setError('f-email', true); ok = false; } else setError('f-email', false);
+    if (!ok) return;
+    form.style.display = 'none';
+    success.classList.add('show');
+  });
+  ['fullname','email'].forEach(id => {
+    document.getElementById(id).addEventListener('input', () => {
+      setError(id === 'fullname' ? 'f-name' : 'f-email', false);
+    });
+  });
+</script>
+</body>
+</html>

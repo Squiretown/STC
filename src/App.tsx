@@ -1,5 +1,5 @@
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 import Navbar from './components/Navbar';
 import ScrollToTop from './components/ScrollToTop';
 import Home from './pages/Home';
@@ -27,15 +27,25 @@ function App() {
     <Router>
       <ScrollToTop />
       <a href="#main-content" className="skip-link">Skip to main content</a>
-      <div className="min-h-screen bg-white overflow-x-hidden">
-        <Navbar />
-        <main id="main-content">
-          <Routes>
+      <AppShell />
+    </Router>
+  );
+}
+
+function AppShell() {
+  const location = useLocation();
+  const isHome = location.pathname === '/';
+
+  return (
+    <div className="min-h-screen bg-white overflow-x-hidden">
+      {!isHome && <Navbar />}
+      <main id="main-content">
+        <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/brand-marketing" element={<BrandMarketing />} />
           <Route path="/ai-technology" element={<AITechnology />} />
           <Route path="/business-funding" element={<BusinessFunding />} />
-<Route path="/about" element={<About />} />
+          <Route path="/about" element={<About />} />
           <Route path="/contact" element={<Contact />} />
           <Route path="/accessibility" element={<Accessibility />} />
           <Route path="/privacy" element={<PrivacyPolicy />} />
@@ -54,10 +64,9 @@ function App() {
             <Route path="settings" element={<SettingsEditor />} />
           </Route>
         </Routes>
-        </main>
-        <Footer />
-      </div>
-    </Router>
+      </main>
+      {!isHome && <Footer />}
+    </div>
   );
 }
 
