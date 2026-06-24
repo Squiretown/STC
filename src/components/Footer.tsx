@@ -8,8 +8,8 @@ const Footer: React.FC = () => {
 
   return (
     <footer className="bg-slate-900 text-white" role="contentinfo">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 md:py-12">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-8">
           {/* Company Info - Left Side */}
           <div className="col-span-1 md:col-span-2 space-y-6">
             {/* Company Name Above Logo */}
@@ -43,7 +43,7 @@ const Footer: React.FC = () => {
             
             {/* Company Description */}
             <p className="text-slate-300 mb-6 max-w-md">
-              {getSetting('company_description', 'Your trusted partner for brand development, AI solutions, and business funding. We blend creativity, technology, and financial expertise to drive your business forward.')}
+              {getSetting('company_description', 'Artificial intelligence is changing how organizations operate. Our mission is to help businesses understand, adopt, and benefit from AI with confidence.')}
             </p>
             
            {/* Contact Information */}
@@ -88,18 +88,23 @@ const Footer: React.FC = () => {
             <nav aria-labelledby="footer-services">
               <ul className="space-y-2 list-none">
                 <li>
+                <Link to="/ai-technology" className="text-slate-300 hover:text-blue-400 transition-colors duration-200">
+                  AI Education & Workshops
+                </Link>
+              </li>
+              <li>
+                <Link to="/ai-technology" className="text-slate-300 hover:text-blue-400 transition-colors duration-200">
+                  AI Strategy & Implementation
+                </Link>
+              </li>
+              <li>
                 <Link to="/brand-marketing" className="text-slate-300 hover:text-blue-400 transition-colors duration-200">
                   Brand & Marketing
                 </Link>
               </li>
               <li>
-                <Link to="/ai-technology" className="text-slate-300 hover:text-blue-400 transition-colors duration-200">
-                  AI Technology
-                </Link>
-              </li>
-              <li>
                 <Link to="/business-funding" className="text-slate-300 hover:text-blue-400 transition-colors duration-200">
-                  Business Funding
+                  Business Strategy
                 </Link>
               </li>
               <li>

@@ -1,27 +1,30 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Menu, X, Building2, LogOut } from 'lucide-react';
+import { Menu, X, Building2 } from 'lucide-react';
 import { useCMS } from '../hooks/useCMS';
-import { useAuth } from '../hooks/useAuth';
 
 const Navbar: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const location = useLocation();
   const { getSetting } = useCMS();
-  const { user, signOut, isAuthenticated } = useAuth();
 
   useEffect(() => {
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 20);
     };
+    const handleOrientationChange = () => setIsOpen(false);
     window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
+    window.addEventListener('orientationchange', handleOrientationChange);
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+      window.removeEventListener('orientationchange', handleOrientationChange);
+    };
   }, []);
 
   const navItems = [
+    { name: 'AI Services', path: '/ai-technology' },
     { name: 'Brand & Marketing', path: '/brand-marketing' },
-    { name: 'AI Technology', path: '/ai-technology' },
     { name: 'Business Strategy', path: '/business-funding' },
     { name: 'Our Work', path: '/work' },
   ];
@@ -33,28 +36,27 @@ const Navbar: React.FC = () => {
     }`}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
-          <Link to="/" className="flex items-center space-x-2">
+          <Link to="/" className="flex items-center space-x-2 min-w-0">
             {getSetting('header_logo_url') ? (
-              <img 
-                src={getSetting('header_logo_url')} 
+              <img
+                src={getSetting('header_logo_url')}
                 alt="Squiretown Consulting home"
                 className="flex-shrink-0"
                 style={{
-                  width: `${getSetting('header_logo_width', '120')}px`,
+                  width: `min(${getSetting('header_logo_width', '120')}px, 90px)`,
                   height: `${getSetting('header_logo_height', '48')}px`,
                   objectFit: 'contain',
                   display: 'block'
                 }}
                 onError={(e) => {
-                  // Fallback to icon if image fails to load
                   const target = e.target as HTMLImageElement;
                   target.style.display = 'none';
                   target.nextElementSibling?.classList.remove('hidden');
                 }}
               />
             ) : null}
-            <Building2 className={`h-8 w-8 text-blue-600 ${getSetting('header_logo_url') ? 'hidden' : ''}`} aria-hidden="true" focusable="false" />
-            <span className="text-xl font-bold text-slate-800">
+            <Building2 className={`h-7 w-7 text-blue-600 flex-shrink-0 ${getSetting('header_logo_url') ? 'hidden' : ''}`} aria-hidden="true" focusable="false" />
+            <span className="text-base sm:text-xl font-bold text-slate-800 truncate">
               {getSetting('company_name', 'Squiretown Consulting')}
             </span>
           </Link>
@@ -84,22 +86,6 @@ const Navbar: React.FC = () => {
               Get Started
               </Link>
             </li>
-            {isAuthenticated && user && (
-              <li className="flex items-center space-x-2 pl-4 border-l border-slate-200">
-                <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0">
-                  <span className="text-sm font-medium text-blue-600">
-                    {user.email?.charAt(0).toUpperCase()}
-                  </span>
-                </div>
-                <button
-                  onClick={() => signOut()}
-                  className="p-1.5 text-slate-400 hover:text-red-600 transition-colors duration-200"
-                  title="Sign out"
-                >
-                  <LogOut className="h-4 w-4" />
-                </button>
-              </li>
-            )}
           </ul>
 
           {/* Mobile menu button */}
@@ -117,7 +103,7 @@ const Navbar: React.FC = () => {
 
         {/* Mobile Navigation */}
         {isOpen && (
-          <div className="md:hidden bg-white border-t border-slate-200" role="menu">
+          <div className="md:hidden bg-white border-t border-slate-200 overflow-y-auto" style={{ maxHeight: 'calc(100dvh - 4rem)' }} role="menu">
             <ul className="px-2 pt-2 pb-3 space-y-1 list-none" role="none">
               {navItems.map((item) => (
                 <li key={item.path} role="none">
@@ -146,25 +132,6 @@ const Navbar: React.FC = () => {
                 Get Started
                 </Link>
               </li>
-              {isAuthenticated && user && (
-                <li role="none" className="mt-4 pt-4 border-t border-slate-200">
-                  <div className="flex items-center space-x-3 px-3 py-2">
-                    <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0">
-                      <span className="text-sm font-medium text-blue-600">
-                        {user.email?.charAt(0).toUpperCase()}
-                      </span>
-                    </div>
-                    <button
-                      onClick={() => { setIsOpen(false); signOut(); }}
-                      className="flex items-center text-slate-500 hover:text-red-600 text-sm transition-colors duration-200"
-                      role="menuitem"
-                    >
-                      <LogOut className="h-4 w-4 mr-1" />
-                      Sign out
-                    </button>
-                  </div>
-                </li>
-              )}
             </ul>
           </div>
         )}

@@ -42,13 +42,13 @@ const Contact: React.FC = () => {
   return (
     <>
       {/* Hero Section */}
-      <section className="bg-slate-50 py-24">
+      <section className="hero-section bg-slate-50 py-16 md:py-24">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center">
-            <h1 className="text-5xl md:text-6xl font-bold text-slate-800 mb-8">
+            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-slate-800 mb-5">
               {getContent('contact', 'hero_title', 'Let\'s Start a Conversation')}
             </h1>
-            <p className="text-xl md:text-2xl text-slate-600 mb-12 max-w-4xl mx-auto">
+            <p className="text-base md:text-xl text-slate-600 mb-8 max-w-4xl mx-auto">
               {getContent('contact', 'hero_subtitle', 'Ready to transform your business? We\'re here to help you navigate the complexities of brand development, AI implementation, and business funding.')}
             </p>
           </div>
@@ -56,9 +56,9 @@ const Contact: React.FC = () => {
       </section>
 
       {/* Contact Information & Form */}
-      <section className="py-24 bg-white">
+      <section className="content-section py-16 md:py-24 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 lg:grid-cols-5 gap-16">
+          <div className="grid grid-cols-1 lg:grid-cols-5 gap-10 lg:gap-16">
             {/* Contact Information */}
             <div className="lg:col-span-2">
               <h2 className="text-3xl font-bold text-slate-800 mb-8">Get in Touch</h2>
@@ -169,17 +169,17 @@ const Contact: React.FC = () => {
       </section>
 
       {/* Service Areas */}
-      <section className="py-24 bg-slate-50">
+      <section className="content-section py-16 md:py-24 bg-slate-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl font-bold text-slate-800 mb-6">Service Areas</h2>
+          <div className="text-center mb-10 md:mb-16">
+            <h2 className="text-3xl md:text-4xl font-bold text-slate-800 mb-4">Service Areas</h2>
             <p className="text-xl text-slate-600 max-w-3xl mx-auto">
               While we're based in Hampton Bays, New York, we work with clients nationwide and internationally 
               across all our service verticals.
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
             <div className="bg-white rounded-xl p-8 text-center shadow-lg">
               <h3 className="text-2xl font-bold text-slate-800 mb-4">Brand & Marketing</h3>
               <p className="text-slate-600">

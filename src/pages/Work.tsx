@@ -91,7 +91,7 @@ const Work: React.FC = () => {
 
   return (
     <>
-      <section className="bg-slate-900 text-white py-24 lg:py-32 relative overflow-hidden">
+      <section className="hero-section bg-slate-900 text-white py-16 md:py-24 lg:py-32 relative overflow-hidden">
         <div
           className="absolute inset-0 opacity-5"
           style={{
@@ -103,13 +103,13 @@ const Work: React.FC = () => {
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="max-w-3xl">
             <p className="text-blue-400 text-sm font-semibold tracking-widest uppercase mb-4">Our Work</p>
-            <h1 className="text-5xl md:text-6xl font-bold mb-6 leading-tight">
+            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mb-5 leading-tight">
               Products we've <span className="text-blue-400">built</span> and <span className="text-blue-400">launched</span>
             </h1>
-            <p className="text-xl text-slate-300 leading-relaxed mb-12 max-w-2xl">
+            <p className="text-base md:text-xl text-slate-300 leading-relaxed mb-8 max-w-2xl">
               From AI-powered platforms to real estate funding tools, these are the live products and client projects that demonstrate what we actually build.
             </p>
-            <div className="flex flex-wrap gap-12">
+            <div className="flex flex-wrap gap-6 sm:gap-12">
               <div><p className="text-4xl font-bold">{liveCount}+</p><p className="text-slate-400 text-sm mt-1">Live platforms</p></div>
               <div><p className="text-4xl font-bold">4</p><p className="text-slate-400 text-sm mt-1">Industry verticals</p></div>
               <div><p className="text-4xl font-bold">15+</p><p className="text-slate-400 text-sm mt-1">Years of experience</p></div>
@@ -135,7 +135,7 @@ const Work: React.FC = () => {
       )}
 
       {!loading && !error && featuredProjects.length > 0 && (
-        <section className="py-20 bg-slate-50">
+        <section className="content-section py-20 bg-slate-50">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="mb-12">
               <h2 className="text-3xl font-bold text-slate-900 mb-2">Featured projects</h2>
@@ -151,7 +151,7 @@ const Work: React.FC = () => {
       )}
 
       {!loading && !error && (
-        <section className="py-20 bg-white">
+        <section className="content-section py-20 bg-white">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-6 mb-12">
               <div>
@@ -194,7 +194,7 @@ const Work: React.FC = () => {
         </section>
       )}
 
-      <section className="py-20 bg-slate-50">
+      <section className="content-section py-20 bg-slate-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="max-w-2xl mb-12">
             <h2 className="text-3xl font-bold text-slate-900 mb-4">What we bring to every project</h2>
@@ -221,7 +221,7 @@ const Work: React.FC = () => {
         </div>
       </section>
 
-      <section className="py-20 bg-slate-900 text-white">
+      <section className="content-section py-20 bg-slate-900 text-white">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <h2 className="text-4xl font-bold mb-4">Have a project in mind?</h2>

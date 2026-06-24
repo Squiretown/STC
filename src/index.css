@@ -2,6 +2,12 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Prevent horizontal overflow on all screens */
+html, body {
+  overflow-x: hidden;
+  -webkit-text-size-adjust: 100%;
+}
+
 /* Skip to main content link - must be first focusable element */
 .skip-link {
   position: absolute;
@@ -55,3 +61,40 @@ select:focus {
     background: #000 !important;
   }
 }
+
+/* ── Landscape mobile optimizations ───────────────────────────────────────── */
+
+/* On phones in landscape the viewport height is ~360-420px.
+   Reduce vertical padding so content is usable without excessive scrolling. */
+@media screen and (max-height: 500px) and (orientation: landscape) {
+  /* Tighten hero sections */
+  .hero-section {
+    padding-top: 3rem !important;
+    padding-bottom: 3rem !important;
+  }
+
+  /* Tighten content sections */
+  .content-section {
+    padding-top: 2.5rem !important;
+    padding-bottom: 2.5rem !important;
+  }
+
+  /* Cap image height so it doesn't eat the whole viewport */
+  .landscape-img {
+    max-height: 40vh;
+    object-fit: cover;
+  }
+
+  /* Tighter navbar on landscape */
+  .navbar-inner {
+    height: 3rem !important;
+  }
+
+  /* Reduce textarea height in forms */
+  textarea {
+    rows: 3;
+    min-height: 80px !important;
+    max-height: 120px !important;
+  }
+}
+

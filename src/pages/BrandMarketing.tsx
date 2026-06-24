@@ -7,23 +7,23 @@ const BrandMarketing: React.FC = () => {
   return (
     <>
       {/* Hero Section */}
-      <section className="relative bg-gradient-to-br from-purple-900 via-pink-900 to-purple-800 text-white py-24">
+      <section className="hero-section relative bg-gradient-to-br from-purple-900 via-pink-900 to-purple-800 text-white py-16 md:py-24">
         <div className="absolute inset-0 bg-black/20"></div>
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center">
-            <div className="w-20 h-20 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-8">
-              <Palette className="h-10 w-10 text-white" aria-hidden="true" focusable="false" />
+            <div className="w-14 h-14 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-6">
+              <Palette className="h-7 w-7 text-white" aria-hidden="true" focusable="false" />
             </div>
-            <h1 className="text-5xl md:text-6xl font-bold mb-8">
+            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mb-5">
               Brand Awareness & Marketing
             </h1>
-            <p className="text-xl md:text-2xl text-purple-100 mb-12 max-w-4xl mx-auto">
-              Build a powerful brand identity that resonates with your audience and drives business growth 
+            <p className="text-base md:text-xl text-purple-100 mb-8 max-w-4xl mx-auto">
+              Build a powerful brand identity that resonates with your audience and drives business growth
               through strategic marketing initiatives.
             </p>
             <Link
               to="/contact"
-              className="bg-white text-purple-900 px-8 py-4 rounded-lg text-lg font-semibold hover:bg-purple-50 transition-all duration-200 inline-flex items-center group"
+              className="bg-white text-purple-900 px-6 py-3 md:px-8 md:py-4 rounded-lg text-base md:text-lg font-semibold hover:bg-purple-50 transition-all duration-200 inline-flex items-center group"
             >
               Start Your Brand Journey
               <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform duration-200" aria-hidden="true" focusable="false" />
@@ -33,17 +33,17 @@ const BrandMarketing: React.FC = () => {
       </section>
 
       {/* Services Overview */}
-      <section className="py-24 bg-white">
+      <section className="content-section py-16 md:py-24 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl font-bold text-slate-800 mb-6">Our Brand & Marketing Services</h2>
-            <p className="text-xl text-slate-600 max-w-3xl mx-auto">
-              From brand strategy to execution, we create cohesive marketing solutions that 
+          <div className="text-center mb-10 md:mb-16">
+            <h2 className="text-3xl md:text-4xl font-bold text-slate-800 mb-4">Our Brand & Marketing Services</h2>
+            <p className="text-base md:text-xl text-slate-600 max-w-3xl mx-auto">
+              From brand strategy to execution, we create cohesive marketing solutions that
               elevate your business and connect with your target audience.
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
             <div className="text-center">
               <div className="w-16 h-16 bg-purple-100 rounded-xl flex items-center justify-center mx-auto mb-6">
                 <Target className="h-8 w-8 text-purple-600" />
@@ -80,9 +80,9 @@ const BrandMarketing: React.FC = () => {
       </section>
 
       {/* Detailed Services */}
-      <section className="py-24 bg-slate-50">
+      <section className="content-section py-16 md:py-24 bg-slate-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-16 items-center">
             <div>
               <h2 className="text-4xl font-bold text-slate-800 mb-8">Complete Brand Development</h2>
               <div className="space-y-6">
@@ -136,7 +136,7 @@ const BrandMarketing: React.FC = () => {
               <img
                 src="https://images.pexels.com/photos/3184291/pexels-photo-3184291.jpeg"
                 alt="Brand development process"
-                className="rounded-2xl shadow-lg w-full"
+                className="landscape-img rounded-2xl shadow-lg w-full"
               />
             </div>
           </div>
@@ -144,17 +144,17 @@ const BrandMarketing: React.FC = () => {
       </section>
 
       {/* Process Section */}
-      <section className="py-24 bg-white">
+      <section className="content-section py-16 md:py-24 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl font-bold text-slate-800 mb-6">Our Brand Development Process</h2>
-            <p className="text-xl text-slate-600 max-w-3xl mx-auto">
-              We follow a proven methodology to ensure your brand resonates with your audience 
+          <div className="text-center mb-10 md:mb-16">
+            <h2 className="text-3xl md:text-4xl font-bold text-slate-800 mb-4">Our Brand Development Process</h2>
+            <p className="text-base md:text-xl text-slate-600 max-w-3xl mx-auto">
+              We follow a proven methodology to ensure your brand resonates with your audience
               and drives business success.
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
             <div className="text-center">
               <div className="w-16 h-16 bg-purple-600 text-white rounded-full flex items-center justify-center mx-auto mb-6 text-2xl font-bold">
                 1
@@ -199,7 +199,7 @@ const BrandMarketing: React.FC = () => {
       </section>
 
       {/* Contact Section */}
-      <section className="py-24 bg-slate-50">
+      <section className="content-section py-16 md:py-24 bg-slate-50">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           <ContactForm 
             title="Ready to Transform Your Brand?"

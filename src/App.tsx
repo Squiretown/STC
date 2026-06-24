@@ -26,7 +26,7 @@ function App() {
     <Router>
       <ScrollToTop />
       <a href="#main-content" className="skip-link">Skip to main content</a>
-      <div className="min-h-screen bg-white">
+      <div className="min-h-screen bg-white overflow-x-hidden">
         <Navbar />
         <main id="main-content">
           <Routes>

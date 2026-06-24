@@ -150,10 +150,10 @@ const ContactForm: React.FC<ContactFormProps> = ({
   }
 
   return (
-    <div className={`bg-white rounded-xl shadow-lg p-8 ${className}`}>
-      <div className="text-center mb-8">
-        <h2 className="text-3xl font-bold text-slate-800 mb-4">{title}</h2>
-        <p className="text-xl text-slate-600">{subtitle}</p>
+    <div className={`bg-white rounded-xl shadow-lg p-5 sm:p-8 ${className}`}>
+      <div className="text-center mb-6">
+        <h2 className="text-2xl sm:text-3xl font-bold text-slate-800 mb-3">{title}</h2>
+        <p className="text-base sm:text-xl text-slate-600">{subtitle}</p>
       </div>
 
       {error && (
@@ -296,12 +296,13 @@ const ContactForm: React.FC<ContactFormProps> = ({
             aria-required="true"
             aria-invalid={fieldErrors.message ? 'true' : 'false'}
             aria-describedby={fieldErrors.message ? 'message-error' : undefined}
-            rows={6}
+            rows={4}
             value={formData.message}
             onChange={handleChange}
-            className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 ${
+            className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 resize-y ${
               fieldErrors.message ? 'border-red-500' : 'border-slate-300'
             }`}
+            style={{ minHeight: '80px', maxHeight: '240px' }}
             placeholder="Tell us about your project and how we can help..."
           />
           {fieldErrors.message && (

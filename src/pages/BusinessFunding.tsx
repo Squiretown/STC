@@ -75,31 +75,31 @@ const BusinessFunding: React.FC = () => {
   return (
     <>
       {/* Hero Section */}
-      <section className="relative bg-gradient-to-br from-slate-900 via-blue-900 to-slate-800 text-white py-24 lg:py-32">
+      <section className="hero-section relative bg-gradient-to-br from-slate-900 via-blue-900 to-slate-800 text-white py-16 md:py-24 lg:py-32">
         <div className="absolute inset-0 bg-black/20"></div>
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="max-w-3xl">
-            <div className="inline-flex items-center bg-white/10 border border-white/20 rounded-full px-4 py-2 text-sm font-medium text-blue-200 mb-8">
+            <div className="inline-flex items-center bg-white/10 border border-white/20 rounded-full px-4 py-2 text-sm font-medium text-blue-200 mb-6">
               <Building className="h-4 w-4 mr-2" aria-hidden="true" focusable="false" />
               Business Strategy & Consulting
             </div>
-            <h1 className="text-5xl md:text-6xl font-bold mb-8 leading-tight">
+            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mb-5 leading-tight">
               A Strategic Partner for Serious Business Owners
             </h1>
-            <p className="text-xl md:text-2xl text-slate-300 mb-12 leading-relaxed">
+            <p className="text-base md:text-xl text-slate-300 mb-8 leading-relaxed">
               We work alongside you — not just as advisors, but as partners who are invested in your success. From business structure to growth execution, we help you build with intention.
             </p>
             <div className="flex flex-col sm:flex-row gap-4">
               <Link
                 to="/contact"
-                className="bg-blue-600 text-white px-8 py-4 rounded-lg text-lg font-semibold hover:bg-blue-700 transition-all duration-200 inline-flex items-center justify-center group"
+                className="bg-blue-600 text-white px-6 py-3 md:px-8 md:py-4 rounded-lg text-base font-semibold hover:bg-blue-700 transition-all duration-200 inline-flex items-center justify-center group"
               >
                 Start a Conversation
                 <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform duration-200" aria-hidden="true" focusable="false" />
               </Link>
               <Link
                 to="/work"
-                className="border-2 border-white/40 text-white px-8 py-4 rounded-lg text-lg font-semibold hover:bg-white/10 transition-all duration-200 inline-flex items-center justify-center"
+                className="border-2 border-white/40 text-white px-6 py-3 md:px-8 md:py-4 rounded-lg text-base font-semibold hover:bg-white/10 transition-all duration-200 inline-flex items-center justify-center"
               >
                 See Our Work
               </Link>
@@ -109,9 +109,9 @@ const BusinessFunding: React.FC = () => {
       </section>
 
       {/* Intro Statement */}
-      <section className="py-20 bg-white">
+      <section className="content-section py-16 md:py-20 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-16 items-center">
             <div>
               <h2 className="text-4xl font-bold text-slate-800 mb-6 leading-tight">
                 Strategy without execution is just a plan. We help you do both.
@@ -127,7 +127,7 @@ const BusinessFunding: React.FC = () => {
               <img
                 src="https://images.pexels.com/photos/3182773/pexels-photo-3182773.jpeg"
                 alt="Business strategy consultation"
-                className="rounded-2xl shadow-xl w-full object-cover aspect-[4/3]"
+                className="landscape-img rounded-2xl shadow-xl w-full object-cover aspect-[4/3]"
               />
               <div className="absolute -bottom-6 -left-6 bg-blue-600 text-white rounded-xl p-6 shadow-xl hidden lg:block">
                 <p className="text-3xl font-bold">15+</p>
@@ -139,16 +139,16 @@ const BusinessFunding: React.FC = () => {
       </section>
 
       {/* Service Pillars */}
-      <section className="py-24 bg-slate-50">
+      <section className="content-section py-16 md:py-24 bg-slate-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl font-bold text-slate-800 mb-6">What We Work On Together</h2>
+          <div className="text-center mb-10 md:mb-16">
+            <h2 className="text-3xl md:text-4xl font-bold text-slate-800 mb-4">What We Work On Together</h2>
             <p className="text-xl text-slate-600 max-w-3xl mx-auto">
               Our consulting practice spans the full business lifecycle — from early structure to scaling and optimization.
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {pillars.map((pillar, index) => {
               const Icon = pillar.icon;
               return (
@@ -166,16 +166,16 @@ const BusinessFunding: React.FC = () => {
       </section>
 
       {/* Process */}
-      <section className="py-24 bg-white">
+      <section className="content-section py-16 md:py-24 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl font-bold text-slate-800 mb-6">How We Engage</h2>
+          <div className="text-center mb-10 md:mb-16">
+            <h2 className="text-3xl md:text-4xl font-bold text-slate-800 mb-4">How We Engage</h2>
             <p className="text-xl text-slate-600 max-w-3xl mx-auto">
               Every engagement is different, but our approach is consistent — thorough, honest, and action-oriented.
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
             {process.map((item, index) => (
               <div key={index} className="relative">
                 {index < process.length - 1 && (
@@ -195,9 +195,9 @@ const BusinessFunding: React.FC = () => {
       </section>
 
       {/* Why Us */}
-      <section className="py-24 bg-slate-900 text-white">
+      <section className="content-section py-16 md:py-24 bg-slate-900 text-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-16 items-center">
             <div>
               <h2 className="text-4xl font-bold mb-8 leading-tight">
                 We're operators, not just consultants.
@@ -219,25 +219,12 @@ const BusinessFunding: React.FC = () => {
                 ))}
               </ul>
             </div>
-            <div className="grid grid-cols-2 gap-6">
-              {[
-                { label: 'Clients Served', value: '500+' },
-                { label: 'Years of Experience', value: '15+' },
-                { label: 'Industries Covered', value: '8+' },
-                { label: 'Success Rate', value: '98%' },
-              ].map((stat, i) => (
-                <div key={i} className="bg-white/10 border border-white/10 rounded-2xl p-6 text-center">
-                  <p className="text-4xl font-bold text-white mb-2">{stat.value}</p>
-                  <p className="text-slate-400 text-sm">{stat.label}</p>
-                </div>
-              ))}
-            </div>
           </div>
         </div>
       </section>
 
       {/* CTA / Contact */}
-      <section className="py-24 bg-white">
+      <section className="content-section py-16 md:py-24 bg-white">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           <ContactForm
             title="Ready to Build Something That Lasts?"
