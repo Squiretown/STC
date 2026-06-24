@@ -12,9 +12,6 @@ export const useLeads = () => {
     fetchingRef.current = true;
     setLoading(true);
     try {
-      // Ensure the session token is active before querying (avoids anon-role request)
-      await supabase.auth.getSession();
-
       const { data, error: supabaseError } = await supabase
         .from('leads')
         .select('*')

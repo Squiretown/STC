@@ -35,10 +35,11 @@ function App() {
 function AppShell() {
   const location = useLocation();
   const isHome = location.pathname === '/';
+  const isAdmin = location.pathname.startsWith('/admin');
 
   return (
     <div className="min-h-screen bg-white overflow-x-hidden">
-      {!isHome && <Navbar />}
+      {!isHome && !isAdmin && <Navbar />}
       <main id="main-content">
         <Routes>
           <Route path="/" element={<Home />} />
@@ -65,7 +66,7 @@ function AppShell() {
           </Route>
         </Routes>
       </main>
-      {!isHome && <Footer />}
+      {!isHome && !isAdmin && <Footer />}
     </div>
   );
 }
