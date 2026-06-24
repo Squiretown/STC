@@ -12,6 +12,9 @@ export const useLeads = () => {
     fetchingRef.current = true;
     setLoading(true);
     try {
+      // Ensure the session token is active before querying (avoids anon-role request)
+      await supabase.auth.getSession();
+
       const { data, error: supabaseError } = await supabase
         .from('leads')
         .select('*')
@@ -22,7 +25,11 @@ export const useLeads = () => {
       setError(null);
     } catch (err) {
       console.error('Error fetching leads:', err);
-      setError(err instanceof Error ? err.message : 'Failed to fetch leads');
+      const msg =
+        err instanceof Error
+          ? err.message
+          : (err as { message?: string })?.message ?? 'Failed to fetch leads';
+      setError(msg);
     } finally {
       setLoading(false);
       fetchingRef.current = false;

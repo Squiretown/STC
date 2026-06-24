@@ -30,6 +30,9 @@ export interface Lead {
   assigned_to?: string;
   tags?: string[];
   last_contacted?: string;
+  sms_consent?: boolean;
+  sms_consent_at?: string | null;
+  sms_consent_text?: string | null;
 }
 
 export interface LeadNote {

@@ -11,7 +11,7 @@ type SortField = 'name' | 'status' | 'created_at' | 'assigned_to';
 type SortDir = 'asc' | 'desc';
 
 const AdminDashboard: React.FC = () => {
-  const { leads, loading, error, updateLead, bulkUpdateLeads, bulkDeleteLeads, exportLeads } = useLeads();
+  const { leads, loading, error, updateLead, bulkUpdateLeads, bulkDeleteLeads, exportLeads, refetch } = useLeads();
   const [selectedLead, setSelectedLead] = useState<Lead | null>(null);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [selectedLeads, setSelectedLeads] = useState<string[]>([]);
@@ -123,7 +123,13 @@ const AdminDashboard: React.FC = () => {
       <div className="pt-8 min-h-screen bg-slate-50 flex items-center justify-center">
         <div className="text-center max-w-md">
           <p className="text-red-600 font-medium mb-2">Error loading leads</p>
-          <p className="text-slate-600 text-sm">{error}</p>
+          <p className="text-slate-600 text-sm mb-4">{error}</p>
+          <button
+            onClick={refetch}
+            className="px-4 py-2 bg-blue-600 text-white text-sm rounded-lg hover:bg-blue-700 transition-colors"
+          >
+            Retry
+          </button>
         </div>
       </div>
     );
