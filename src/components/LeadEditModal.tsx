@@ -1,388 +1,614 @@
 import React, { useState, useEffect } from 'react';
-import { X, Save, Trash2, AlertTriangle } from 'lucide-react';
-import type { Lead } from '../lib/supabase';
+import { X, Save, Trash2, AlertTriangle, Calendar, MessageSquare, Plus, Check, Phone, Mail, Users, Briefcase, FileText, Clock } from 'lucide-react';
+import { supabase, fetchLeadNotes, fetchLeadActivities } from '../lib/supabase';
+import { STATUS_OPTIONS, SERVICE_OPTIONS, ACTIVITY_TYPE_OPTIONS, getActivityTypeLabel } from '../lib/constants';
+import { useAuth } from '../hooks/useAuth';
+import type { Lead, LeadNote, LeadActivity } from '../lib/supabase';
 
 interface LeadEditModalProps {
   lead: Lead | null;
   isOpen: boolean;
   onSave: (leadId: string, updates: Partial<Lead>) => Promise<boolean>;
-  onDelete?: (leadId: string) => Promise<boolean>;
   onClose: () => void;
 }
 
-const LeadEditModal: React.FC<LeadEditModalProps> = ({
-  lead,
-  isOpen,
-  onSave,
-  onDelete,
-  onClose
-}) => {
+type Tab = 'details' | 'activities' | 'notes';
+
+const ACTIVITY_ICONS: Record<string, React.ElementType> = {
+  call: Phone,
+  email: Mail,
+  meeting: Users,
+  'follow-up': Clock,
+  demo: Briefcase,
+  proposal: FileText,
+  other: Calendar,
+};
+
+const LeadEditModal: React.FC<LeadEditModalProps> = ({ lead, isOpen, onSave, onClose }) => {
+  const { user } = useAuth();
+  const [activeTab, setActiveTab] = useState<Tab>('details');
   const [formData, setFormData] = useState<Partial<Lead>>({});
   const [isSaving, setIsSaving] = useState(false);
-  const [isDeleting, setIsDeleting] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
 
-  // Status options - safe to include regardless of current schema
-  const statusOptions = [
-    { value: 'New', label: 'New', color: 'bg-blue-100 text-blue-800' },
-    { value: 'Contacted', label: 'Contacted', color: 'bg-yellow-100 text-yellow-800' },
-    { value: 'Qualified', label: 'Qualified', color: 'bg-purple-100 text-purple-800' },
-    { value: 'Converted', label: 'Converted', color: 'bg-green-100 text-green-800' },
-    { value: 'Lost', label: 'Lost', color: 'bg-red-100 text-red-800' }
-  ];
+  // Activities state
+  const [activities, setActivities] = useState<LeadActivity[]>([]);
+  const [loadingActivities, setLoadingActivities] = useState(false);
+  const [showActivityForm, setShowActivityForm] = useState(false);
+  const [newActivity, setNewActivity] = useState({
+    type: 'call',
+    description: '',
+    scheduled_at: '',
+  });
+  const [savingActivity, setSavingActivity] = useState(false);
 
-  // Service options - safe to include regardless of current schema
-  const serviceOptions = [
-    { value: '', label: 'Not specified' },
-    { value: 'brand-marketing', label: 'Brand Awareness & Marketing' },
-    { value: 'ai-technology', label: 'AI Technology Stack Building' },
-    { value: 'business-funding', label: 'Business Funding' },
-    { value: 'title-services', label: 'Real Estate Title Services' },
-    { value: 'multiple', label: 'Multiple Services' },
-    { value: 'consultation', label: 'General Consultation' }
-  ];
+  // Notes state
+  const [notes, setNotes] = useState<LeadNote[]>([]);
+  const [loadingNotes, setLoadingNotes] = useState(false);
+  const [newNote, setNewNote] = useState('');
+  const [savingNote, setSavingNote] = useState(false);
 
-  // Initialize form data when lead changes
   useEffect(() => {
-    if (lead) {
-      // Use optional chaining to safely access properties that might not exist in schema
-      setFormData({
-        name: lead.name || '',
-        email: lead.email || '',
-        company: lead.company || '',
-        service: lead.service || '',
-        message: lead.message || '',
-        status: lead.status || 'New',
-        assigned_to: lead.assigned_to || '',
-        source: lead.source || 'Website Contact Form'
+    if (!lead) return;
+    setFormData({
+      name: lead.name || '',
+      email: lead.email || '',
+      company: lead.company || '',
+      phone: lead.phone || '',
+      service: lead.service || '',
+      message: lead.message || '',
+      status: lead.status || 'New',
+      assigned_to: lead.assigned_to || '',
+      source: lead.source || 'Website Contact Form',
+    });
+    setError(null);
+    setFieldErrors({});
+    setShowDeleteConfirm(false);
+    setActiveTab('details');
+  }, [lead]);
+
+  useEffect(() => {
+    if (!lead || !isOpen) return;
+    if (activeTab === 'activities') {
+      setLoadingActivities(true);
+      fetchLeadActivities(lead.id).then(data => {
+        setActivities(data);
+        setLoadingActivities(false);
       });
     }
-    setError(null);
-    setShowDeleteConfirm(false);
-  }, [lead]);
+    if (activeTab === 'notes') {
+      setLoadingNotes(true);
+      fetchLeadNotes(lead.id).then(data => {
+        setNotes(data);
+        setLoadingNotes(false);
+      });
+    }
+  }, [lead, isOpen, activeTab]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
-    setFormData(prev => ({
-      ...prev,
-      [name]: value
-    }));
+    setFormData(prev => ({ ...prev, [name]: value }));
+    if (fieldErrors[name]) setFieldErrors(prev => ({ ...prev, [name]: '' }));
+  };
+
+  const validate = (): boolean => {
+    const errors: Record<string, string> = {};
+    if (!formData.name?.trim()) errors.name = 'Name is required';
+    if (!formData.email?.trim()) errors.email = 'Email is required';
+    else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) errors.email = 'Enter a valid email';
+    setFieldErrors(errors);
+    return Object.keys(errors).length === 0;
   };
 
   const handleSave = async () => {
-    if (!lead?.id) return;
-
+    if (!lead?.id || !validate()) return;
     setIsSaving(true);
     setError(null);
-
     try {
-      // Remove any properties that might not exist in the schema to avoid errors
-      const safeUpdates: Partial<Lead> = {};
-      const requiredFields = ['name', 'email']; // Fields we know must exist
-      
-      // Only include fields that have values and either are required or exist in the original lead
-      Object.entries(formData).forEach(([key, value]) => {
-        if (
-          (value !== undefined && value !== null) && // Has a value
-          (requiredFields.includes(key) || key in lead) // Is required or exists in lead
-        ) {
-          safeUpdates[key as keyof Lead] = value;
-        }
-      });
-
-      const success = await onSave(lead.id, safeUpdates);
-      if (success) {
-        onClose();
-      } else {
-        setError('Failed to save changes. Please check if all fields in your form are supported by the database schema.');
-      }
-    } catch (err) {
-      setError('An unexpected error occurred while saving. Please check your database schema.');
+      const ok = await onSave(lead.id, formData);
+      if (ok) onClose();
+      else setError('Failed to save changes. Please try again.');
+    } catch {
+      setError('An unexpected error occurred while saving.');
     } finally {
       setIsSaving(false);
     }
   };
 
   const handleDelete = async () => {
-    if (!lead?.id || !onDelete) return;
-
+    if (!lead?.id) return;
     setIsDeleting(true);
-    setError(null);
-
     try {
-      const success = await onDelete(lead.id);
-      if (success) {
-        onClose();
-      } else {
-        setError('Failed to delete lead. Please try again.');
-      }
-    } catch (err) {
-      setError('An unexpected error occurred while deleting.');
+      const { error: err } = await supabase.from('leads').delete().eq('id', lead.id);
+      if (err) throw err;
+      onClose();
+    } catch {
+      setError('Failed to delete lead. Please try again.');
     } finally {
       setIsDeleting(false);
       setShowDeleteConfirm(false);
     }
   };
 
+  const handleAddActivity = async () => {
+    if (!lead?.id || !newActivity.description.trim() || !newActivity.scheduled_at) return;
+    setSavingActivity(true);
+    try {
+      const { data, error: err } = await supabase
+        .from('lead_activities')
+        .insert({
+          lead_id: lead.id,
+          type: newActivity.type,
+          description: newActivity.description.trim(),
+          scheduled_at: new Date(newActivity.scheduled_at).toISOString(),
+          created_by: user?.email || 'admin',
+          completed: false,
+        })
+        .select()
+        .single();
+
+      if (err) throw err;
+      setActivities(prev => [...prev, data as LeadActivity].sort((a, b) =>
+        new Date(a.scheduled_at).getTime() - new Date(b.scheduled_at).getTime()
+      ));
+      setNewActivity({ type: 'call', description: '', scheduled_at: '' });
+      setShowActivityForm(false);
+    } catch (err) {
+      console.error('Error adding activity:', err);
+    } finally {
+      setSavingActivity(false);
+    }
+  };
+
+  const handleCompleteActivity = async (activityId: string) => {
+    const { error: err } = await supabase
+      .from('lead_activities')
+      .update({ completed: true, completed_at: new Date().toISOString() })
+      .eq('id', activityId);
+
+    if (!err) {
+      setActivities(prev => prev.map(a =>
+        a.id === activityId ? { ...a, completed: true, completed_at: new Date().toISOString() } : a
+      ));
+    }
+  };
+
+  const handleAddNote = async () => {
+    if (!lead?.id || !newNote.trim()) return;
+    setSavingNote(true);
+    try {
+      const { data, error: err } = await supabase
+        .from('lead_notes')
+        .insert({
+          lead_id: lead.id,
+          content: newNote.trim(),
+          created_by: user?.email || 'admin',
+        })
+        .select()
+        .single();
+
+      if (err) throw err;
+      setNotes(prev => [data as LeadNote, ...prev]);
+      setNewNote('');
+    } catch (err) {
+      console.error('Error adding note:', err);
+    } finally {
+      setSavingNote(false);
+    }
+  };
+
   if (!isOpen || !lead) return null;
+
+  const tabs: { id: Tab; label: string; icon: React.ElementType }[] = [
+    { id: 'details', label: 'Details', icon: FileText },
+    { id: 'activities', label: 'Appointments', icon: Calendar },
+    { id: 'notes', label: 'Notes', icon: MessageSquare },
+  ];
+
+  const now = new Date();
+  const minDateTime = now.toISOString().slice(0, 16);
 
   return (
     <div className="fixed inset-0 z-50 overflow-y-auto">
-      <div className="flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:block sm:p-0">
-        {/* Background overlay */}
-        <div 
-          className="fixed inset-0 bg-slate-500 bg-opacity-75 transition-opacity"
-          onClick={onClose}
-        ></div>
+      <div className="flex items-center justify-center min-h-screen px-4 pt-4 pb-20 sm:p-0">
+        <div className="fixed inset-0 bg-slate-900 bg-opacity-60 transition-opacity" onClick={onClose} />
 
-        {/* Modal panel */}
-        <div className="inline-block align-bottom bg-white rounded-lg px-4 pt-5 pb-4 text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-2xl sm:w-full sm:p-6">
+        <div className="relative inline-block bg-white rounded-xl shadow-2xl w-full sm:max-w-2xl text-left overflow-hidden">
           {/* Header */}
-          <div className="flex items-center justify-between mb-6">
-            <h3 className="text-lg font-semibold text-slate-800">
-              Edit Lead: {lead.name}
-            </h3>
-            <button
-              onClick={onClose}
-              className="text-slate-400 hover:text-slate-600 transition-colors duration-200"
-            >
-              <X className="h-6 w-6" />
+          <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100">
+            <div>
+              <h3 className="text-lg font-semibold text-slate-800">{lead.name}</h3>
+              <p className="text-sm text-slate-500">{lead.email}</p>
+            </div>
+            <button onClick={onClose} className="p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-lg transition-colors">
+              <X className="h-5 w-5" />
             </button>
           </div>
 
-          {/* Error message */}
-          {error && (
-            <div className="bg-red-50 border border-red-200 rounded-lg p-3 mb-6">
-              <div className="flex items-center">
-                <AlertTriangle className="h-5 w-5 text-red-500 mr-2" />
-                <p className="text-red-700 text-sm">{error}</p>
-              </div>
-              
-              {error.includes('schema') && (
-                <div className="mt-2 text-xs text-red-600">
-                  <p>It appears your database may be missing required columns. Please run the database schema update SQL to add the necessary columns.</p>
-                </div>
-              )}
-            </div>
-          )}
-
-          {/* Form */}
-          <div className="space-y-6">
-            {/* Name and Email */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div>
-                <label htmlFor="name" className="block text-sm font-medium text-slate-700 mb-2">
-                  Name *
-                </label>
-                <input
-                  type="text"
-                  id="name"
-                  name="name"
-                  value={formData.name || ''}
-                  onChange={handleInputChange}
-                  className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                  required
-                />
-              </div>
-              <div>
-                <label htmlFor="email" className="block text-sm font-medium text-slate-700 mb-2">
-                  Email *
-                </label>
-                <input
-                  type="email"
-                  id="email"
-                  name="email"
-                  value={formData.email || ''}
-                  onChange={handleInputChange}
-                  className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                  required
-                />
-              </div>
-            </div>
-
-            {/* Company */}
-            <div>
-              <label htmlFor="company" className="block text-sm font-medium text-slate-700 mb-2">
-                Company
-              </label>
-              <input
-                type="text"
-                id="company"
-                name="company"
-                value={formData.company || ''}
-                onChange={handleInputChange}
-                className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-              />
-            </div>
-
-            {/* Service and Status */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div>
-                <label htmlFor="service" className="block text-sm font-medium text-slate-700 mb-2">
-                  Service
-                </label>
-                <select
-                  id="service"
-                  name="service"
-                  value={formData.service || ''}
-                  onChange={handleInputChange}
-                  className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+          {/* Tabs */}
+          <div className="flex border-b border-slate-100 bg-slate-50">
+            {tabs.map(tab => {
+              const Icon = tab.icon;
+              return (
+                <button
+                  key={tab.id}
+                  onClick={() => setActiveTab(tab.id)}
+                  className={`flex items-center gap-2 px-5 py-3 text-sm font-medium transition-colors border-b-2 ${
+                    activeTab === tab.id
+                      ? 'border-blue-600 text-blue-600 bg-white'
+                      : 'border-transparent text-slate-500 hover:text-slate-700'
+                  }`}
                 >
-                  {serviceOptions.map(option => (
-                    <option key={option.value} value={option.value}>
-                      {option.label}
-                    </option>
-                  ))}
-                </select>
-              </div>
-              <div>
-                <label htmlFor="status" className="block text-sm font-medium text-slate-700 mb-2">
-                  Status
-                </label>
-                <select
-                  id="status"
-                  name="status"
-                  value={formData.status || 'New'}
-                  onChange={handleInputChange}
-                  className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                >
-                  {statusOptions.map(option => (
-                    <option key={option.value} value={option.value}>
-                      {option.label}
-                    </option>
-                  ))}
-                </select>
-              </div>
-            </div>
-
-            {/* Assigned To */}
-            <div>
-              <label htmlFor="assigned_to" className="block text-sm font-medium text-slate-700 mb-2">
-                Assigned To
-              </label>
-              <input
-                type="text"
-                id="assigned_to"
-                name="assigned_to"
-                value={formData.assigned_to || ''}
-                onChange={handleInputChange}
-                className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                placeholder="Enter team member name or email"
-              />
-            </div>
-
-            {/* Source */}
-            <div>
-              <label htmlFor="source" className="block text-sm font-medium text-slate-700 mb-2">
-                Source
-              </label>
-              <input
-                type="text"
-                id="source"
-                name="source"
-                value={formData.source || ''}
-                onChange={handleInputChange}
-                className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                placeholder="e.g., Website Contact Form, Referral, etc."
-              />
-            </div>
-
-            {/* Message */}
-            <div>
-              <label htmlFor="message" className="block text-sm font-medium text-slate-700 mb-2">
-                Message
-              </label>
-              <textarea
-                id="message"
-                name="message"
-                value={formData.message || ''}
-                onChange={handleInputChange}
-                rows={4}
-                className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                placeholder="Lead's message or notes..."
-              />
-            </div>
+                  <Icon className="h-4 w-4" />
+                  {tab.label}
+                </button>
+              );
+            })}
           </div>
 
-          {/* Delete Confirmation */}
-          {showDeleteConfirm && (
-            <div className="bg-red-50 border border-red-200 rounded-lg p-4 mt-6">
-              <div className="flex items-center mb-3">
-                <AlertTriangle className="h-5 w-5 text-red-500 mr-2" />
-                <h4 className="text-red-800 font-medium">Confirm Deletion</h4>
+          {/* Tab content */}
+          <div className="px-6 py-5 max-h-[60vh] overflow-y-auto">
+            {/* ── DETAILS TAB ── */}
+            {activeTab === 'details' && (
+              <div className="space-y-5">
+                {error && (
+                  <div className="bg-red-50 border border-red-200 rounded-lg p-3 flex items-center gap-2">
+                    <AlertTriangle className="h-4 w-4 text-red-500 flex-shrink-0" />
+                    <p className="text-red-700 text-sm">{error}</p>
+                  </div>
+                )}
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-slate-700 mb-1">Name *</label>
+                    <input
+                      type="text"
+                      name="name"
+                      value={formData.name || ''}
+                      onChange={handleInputChange}
+                      className={`w-full px-3 py-2 border rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent ${fieldErrors.name ? 'border-red-400' : 'border-slate-300'}`}
+                    />
+                    {fieldErrors.name && <p className="mt-1 text-xs text-red-600">{fieldErrors.name}</p>}
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-slate-700 mb-1">Email *</label>
+                    <input
+                      type="email"
+                      name="email"
+                      value={formData.email || ''}
+                      onChange={handleInputChange}
+                      className={`w-full px-3 py-2 border rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent ${fieldErrors.email ? 'border-red-400' : 'border-slate-300'}`}
+                    />
+                    {fieldErrors.email && <p className="mt-1 text-xs text-red-600">{fieldErrors.email}</p>}
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-slate-700 mb-1">Phone</label>
+                    <input
+                      type="tel"
+                      name="phone"
+                      value={formData.phone || ''}
+                      onChange={handleInputChange}
+                      className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      placeholder="+1 555 000 0000"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-slate-700 mb-1">Company</label>
+                    <input
+                      type="text"
+                      name="company"
+                      value={formData.company || ''}
+                      onChange={handleInputChange}
+                      className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-slate-700 mb-1">Service</label>
+                    <select
+                      name="service"
+                      value={formData.service || ''}
+                      onChange={handleInputChange}
+                      className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    >
+                      {SERVICE_OPTIONS.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-slate-700 mb-1">Status</label>
+                    <select
+                      name="status"
+                      value={formData.status || 'New'}
+                      onChange={handleInputChange}
+                      className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    >
+                      {STATUS_OPTIONS.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
+                    </select>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-slate-700 mb-1">Assigned To</label>
+                    <input
+                      type="text"
+                      name="assigned_to"
+                      value={formData.assigned_to || ''}
+                      onChange={handleInputChange}
+                      className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      placeholder="Team member name or email"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-slate-700 mb-1">Source</label>
+                    <input
+                      type="text"
+                      name="source"
+                      value={formData.source || ''}
+                      onChange={handleInputChange}
+                      className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 mb-1">Message</label>
+                  <textarea
+                    name="message"
+                    value={formData.message || ''}
+                    onChange={handleInputChange}
+                    rows={3}
+                    className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  />
+                </div>
+
+                {showDeleteConfirm && (
+                  <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+                    <div className="flex items-center gap-2 mb-2">
+                      <AlertTriangle className="h-4 w-4 text-red-500" />
+                      <span className="text-red-800 font-medium text-sm">Delete this lead?</span>
+                    </div>
+                    <p className="text-red-700 text-sm mb-3">This action cannot be undone.</p>
+                    <div className="flex gap-2">
+                      <button
+                        onClick={handleDelete}
+                        disabled={isDeleting}
+                        className="px-3 py-1.5 bg-red-600 text-white text-sm rounded-lg hover:bg-red-700 disabled:opacity-50 flex items-center gap-1"
+                      >
+                        <Trash2 className="h-3 w-3" />
+                        {isDeleting ? 'Deleting...' : 'Delete'}
+                      </button>
+                      <button
+                        onClick={() => setShowDeleteConfirm(false)}
+                        className="px-3 py-1.5 bg-white border border-slate-300 text-slate-700 text-sm rounded-lg hover:bg-slate-50"
+                      >
+                        Cancel
+                      </button>
+                    </div>
+                  </div>
+                )}
               </div>
-              <p className="text-red-700 text-sm mb-4">
-                Are you sure you want to delete this lead? This action cannot be undone.
-              </p>
-              <div className="flex space-x-3">
+            )}
+
+            {/* ── ACTIVITIES TAB ── */}
+            {activeTab === 'activities' && (
+              <div>
+                <div className="flex items-center justify-between mb-4">
+                  <h4 className="font-medium text-slate-800">Scheduled Appointments</h4>
+                  <button
+                    onClick={() => setShowActivityForm(!showActivityForm)}
+                    className="flex items-center gap-1.5 px-3 py-1.5 bg-blue-600 text-white text-sm rounded-lg hover:bg-blue-700 transition-colors"
+                  >
+                    <Plus className="h-4 w-4" />
+                    Schedule
+                  </button>
+                </div>
+
+                {showActivityForm && (
+                  <div className="bg-slate-50 border border-slate-200 rounded-lg p-4 mb-4 space-y-3">
+                    <div className="grid grid-cols-2 gap-3">
+                      <div>
+                        <label className="block text-xs font-medium text-slate-600 mb-1">Type</label>
+                        <select
+                          value={newActivity.type}
+                          onChange={e => setNewActivity(prev => ({ ...prev, type: e.target.value }))}
+                          className="w-full px-2 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        >
+                          {ACTIVITY_TYPE_OPTIONS.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
+                        </select>
+                      </div>
+                      <div>
+                        <label className="block text-xs font-medium text-slate-600 mb-1">Date & Time *</label>
+                        <input
+                          type="datetime-local"
+                          value={newActivity.scheduled_at}
+                          min={minDateTime}
+                          onChange={e => setNewActivity(prev => ({ ...prev, scheduled_at: e.target.value }))}
+                          className="w-full px-2 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        />
+                      </div>
+                    </div>
+                    <div>
+                      <label className="block text-xs font-medium text-slate-600 mb-1">Description *</label>
+                      <input
+                        type="text"
+                        value={newActivity.description}
+                        onChange={e => setNewActivity(prev => ({ ...prev, description: e.target.value }))}
+                        placeholder="What is this appointment for?"
+                        className="w-full px-2 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      />
+                    </div>
+                    <div className="flex gap-2 pt-1">
+                      <button
+                        onClick={handleAddActivity}
+                        disabled={savingActivity || !newActivity.description.trim() || !newActivity.scheduled_at}
+                        className="px-3 py-1.5 bg-blue-600 text-white text-sm rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                      >
+                        {savingActivity ? 'Saving...' : 'Save Appointment'}
+                      </button>
+                      <button
+                        onClick={() => setShowActivityForm(false)}
+                        className="px-3 py-1.5 bg-white border border-slate-300 text-slate-700 text-sm rounded-lg hover:bg-slate-50"
+                      >
+                        Cancel
+                      </button>
+                    </div>
+                  </div>
+                )}
+
+                {loadingActivities ? (
+                  <div className="text-center py-8">
+                    <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-600 mx-auto" />
+                  </div>
+                ) : activities.length === 0 ? (
+                  <div className="text-center py-10 text-slate-400">
+                    <Calendar className="h-10 w-10 mx-auto mb-2 opacity-40" />
+                    <p className="text-sm">No appointments scheduled</p>
+                  </div>
+                ) : (
+                  <div className="space-y-3">
+                    {activities.map(activity => {
+                      const Icon = ACTIVITY_ICONS[activity.type] || Calendar;
+                      const isPast = new Date(activity.scheduled_at) < new Date();
+                      return (
+                        <div
+                          key={activity.id}
+                          className={`flex items-start gap-3 p-3 rounded-lg border ${
+                            activity.completed
+                              ? 'bg-green-50 border-green-100'
+                              : isPast
+                              ? 'bg-amber-50 border-amber-100'
+                              : 'bg-white border-slate-200'
+                          }`}
+                        >
+                          <div className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5 ${
+                            activity.completed ? 'bg-green-100' : isPast ? 'bg-amber-100' : 'bg-blue-100'
+                          }`}>
+                            <Icon className={`h-4 w-4 ${activity.completed ? 'text-green-600' : isPast ? 'text-amber-600' : 'text-blue-600'}`} />
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-center gap-2 flex-wrap">
+                              <span className="text-sm font-medium text-slate-800">{activity.description}</span>
+                              <span className={`text-xs px-1.5 py-0.5 rounded font-medium ${
+                                activity.completed ? 'bg-green-100 text-green-700' : isPast ? 'bg-amber-100 text-amber-700' : 'bg-blue-100 text-blue-700'
+                              }`}>
+                                {getActivityTypeLabel(activity.type)}
+                              </span>
+                            </div>
+                            <p className="text-xs text-slate-500 mt-0.5">
+                              {new Date(activity.scheduled_at).toLocaleString('en-US', {
+                                weekday: 'short', month: 'short', day: 'numeric',
+                                hour: '2-digit', minute: '2-digit',
+                              })}
+                              {activity.completed && activity.completed_at && (
+                                <span className="text-green-600 ml-2">
+                                  · Completed {new Date(activity.completed_at).toLocaleDateString()}
+                                </span>
+                              )}
+                            </p>
+                          </div>
+                          {!activity.completed && (
+                            <button
+                              onClick={() => handleCompleteActivity(activity.id)}
+                              className="flex-shrink-0 p-1.5 text-slate-400 hover:text-green-600 hover:bg-green-50 rounded-lg transition-colors"
+                              title="Mark complete"
+                            >
+                              <Check className="h-4 w-4" />
+                            </button>
+                          )}
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* ── NOTES TAB ── */}
+            {activeTab === 'notes' && (
+              <div>
+                <div className="mb-4">
+                  <label className="block text-sm font-medium text-slate-700 mb-2">Add Note</label>
+                  <textarea
+                    value={newNote}
+                    onChange={e => setNewNote(e.target.value)}
+                    rows={3}
+                    placeholder="Add a note about this lead..."
+                    className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  />
+                  <button
+                    onClick={handleAddNote}
+                    disabled={savingNote || !newNote.trim()}
+                    className="mt-2 px-3 py-1.5 bg-blue-600 text-white text-sm rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-1.5"
+                  >
+                    <Plus className="h-3.5 w-3.5" />
+                    {savingNote ? 'Saving...' : 'Add Note'}
+                  </button>
+                </div>
+
+                {loadingNotes ? (
+                  <div className="text-center py-8">
+                    <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-600 mx-auto" />
+                  </div>
+                ) : notes.length === 0 ? (
+                  <div className="text-center py-10 text-slate-400">
+                    <MessageSquare className="h-10 w-10 mx-auto mb-2 opacity-40" />
+                    <p className="text-sm">No notes yet</p>
+                  </div>
+                ) : (
+                  <div className="space-y-3">
+                    {notes.map(note => (
+                      <div key={note.id} className="bg-slate-50 border border-slate-200 rounded-lg p-3">
+                        <p className="text-sm text-slate-800 whitespace-pre-wrap">{note.content}</p>
+                        <p className="text-xs text-slate-400 mt-2">
+                          {note.created_by} · {new Date(note.created_at).toLocaleString('en-US', {
+                            month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit',
+                          })}
+                        </p>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
+
+          {/* Footer */}
+          {activeTab === 'details' && (
+            <div className="flex items-center justify-between px-6 py-4 border-t border-slate-100 bg-slate-50">
+              <button
+                onClick={() => setShowDeleteConfirm(true)}
+                className="flex items-center gap-1.5 px-3 py-2 text-red-600 hover:bg-red-50 rounded-lg text-sm transition-colors"
+              >
+                <Trash2 className="h-4 w-4" />
+                Delete Lead
+              </button>
+              <div className="flex gap-2">
                 <button
-                  onClick={handleDelete}
-                  disabled={isDeleting}
-                  className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center"
-                >
-                  {isDeleting ? (
-                    <>
-                      <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
-                      Deleting...
-                    </>
-                  ) : (
-                    <>
-                      <Trash2 className="h-4 w-4 mr-2" />
-                      Delete
-                    </>
-                  )}
-                </button>
-                <button
-                  onClick={() => setShowDeleteConfirm(false)}
-                  className="px-4 py-2 bg-slate-200 text-slate-700 rounded-lg hover:bg-slate-300"
+                  onClick={onClose}
+                  className="px-4 py-2 bg-white border border-slate-300 text-slate-700 rounded-lg text-sm hover:bg-slate-50 transition-colors"
                 >
                   Cancel
                 </button>
+                <button
+                  onClick={handleSave}
+                  disabled={isSaving}
+                  className="flex items-center gap-1.5 px-4 py-2 bg-blue-600 text-white rounded-lg text-sm hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                >
+                  <Save className="h-4 w-4" />
+                  {isSaving ? 'Saving...' : 'Save Changes'}
+                </button>
               </div>
             </div>
           )}
-
-          {/* Actions */}
-          <div className="flex justify-between items-center mt-8 pt-6 border-t border-slate-200">
-            <div>
-              {onDelete && !showDeleteConfirm && (
-                <button
-                  onClick={() => setShowDeleteConfirm(true)}
-                  className="px-4 py-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors duration-200 flex items-center"
-                >
-                  <Trash2 className="h-4 w-4 mr-2" />
-                  Delete Lead
-                </button>
-              )}
-            </div>
-            
-            <div className="flex space-x-3">
-              <button
-                onClick={onClose}
-                className="px-4 py-2 bg-slate-200 text-slate-700 rounded-lg hover:bg-slate-300 transition-colors duration-200"
-              >
-                Cancel
-              </button>
-              <button
-                onClick={handleSave}
-                disabled={isSaving}
-                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center transition-colors duration-200"
-              >
-                {isSaving ? (
-                  <>
-                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
-                    Saving...
-                  </>
-                ) : (
-                  <>
-                    <Save className="h-4 w-4 mr-2" />
-                    Save Changes
-                  </>
-                )}
-              </button>
-            </div>
-          </div>
         </div>
       </div>
     </div>

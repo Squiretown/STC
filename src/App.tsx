@@ -17,6 +17,7 @@ import AdminLayout from './pages/admin/AdminLayout';
 import ContentEditor from './pages/admin/ContentEditor';
 import SettingsEditor from './pages/admin/SettingsEditor';
 import ProjectsEditor from './pages/admin/ProjectsEditor';
+import AppointmentsPage from './pages/admin/AppointmentsPage';
 import Work from './pages/Work';
 import ProtectedRoute from './components/ProtectedRoute';
 import Footer from './components/Footer';
@@ -47,6 +48,7 @@ function App() {
             </ProtectedRoute>
           }>
             <Route index element={<AdminDashboard />} />
+            <Route path="appointments" element={<AppointmentsPage />} />
             <Route path="projects" element={<ProjectsEditor />} />
             <Route path="content" element={<ContentEditor />} />
             <Route path="settings" element={<SettingsEditor />} />
