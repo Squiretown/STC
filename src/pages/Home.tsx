@@ -91,23 +91,6 @@ const Home: React.FC = () => (
             </a>
           </div>
 
-          {/* Social proof row */}
-          <div className="flex items-center gap-5 mt-9">
-            <div className="text-center">
-              <p className="font-display font-extrabold text-[22px] leading-none">50+</p>
-              <p className="text-[11px] mt-1" style={{ color: '#64748b' }}>Projects shipped</p>
-            </div>
-            <div className="h-8 w-px" style={{ background: 'rgba(255,255,255,0.08)' }} aria-hidden="true" />
-            <div className="text-center">
-              <p className="font-display font-extrabold text-[22px] leading-none">65%</p>
-              <p className="text-[11px] mt-1" style={{ color: '#64748b' }}>Avg. time saved</p>
-            </div>
-            <div className="h-8 w-px" style={{ background: 'rgba(255,255,255,0.08)' }} aria-hidden="true" />
-            <div className="text-center">
-              <p className="font-display font-extrabold text-[22px] leading-none">1-day</p>
-              <p className="text-[11px] mt-1" style={{ color: '#64748b' }}>Response time</p>
-            </div>
-          </div>
         </div>
 
         {/* Right: dashboard */}
