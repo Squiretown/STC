@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link, useLocation, Outlet } from 'react-router-dom';
-import { Building2, Users, FileText, Settings, LogOut, Menu, X, Briefcase, Calendar } from 'lucide-react';
+import { Building2, Users, FileText, Settings, LogOut, Menu, X, Briefcase, Calendar, GitBranch } from 'lucide-react';
 import { useAuth } from '../../hooks/useAuth';
 
 const AdminLayout: React.FC = () => {
@@ -11,6 +11,7 @@ const AdminLayout: React.FC = () => {
   const navigation = [
     { name: 'Leads', href: '/admin', icon: Users },
     { name: 'Appointments', href: '/admin/appointments', icon: Calendar },
+    { name: 'Routing', href: '/admin/routing', icon: GitBranch },
     { name: 'Projects', href: '/admin/projects', icon: Briefcase },
     { name: 'Content', href: '/admin/content', icon: FileText },
     { name: 'Settings', href: '/admin/settings', icon: Settings },

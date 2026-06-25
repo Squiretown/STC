@@ -18,6 +18,7 @@ import ContentEditor from './pages/admin/ContentEditor';
 import SettingsEditor from './pages/admin/SettingsEditor';
 import ProjectsEditor from './pages/admin/ProjectsEditor';
 import AppointmentsPage from './pages/admin/AppointmentsPage';
+import RoutingRulesEditor from './pages/admin/RoutingRulesEditor';
 import Work from './pages/Work';
 import ProtectedRoute from './components/ProtectedRoute';
 import Footer from './components/Footer';
@@ -60,6 +61,7 @@ function AppShell() {
           }>
             <Route index element={<AdminDashboard />} />
             <Route path="appointments" element={<AppointmentsPage />} />
+            <Route path="routing" element={<RoutingRulesEditor />} />
             <Route path="projects" element={<ProjectsEditor />} />
             <Route path="content" element={<ContentEditor />} />
             <Route path="settings" element={<SettingsEditor />} />
