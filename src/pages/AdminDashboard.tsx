@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { Users, TrendingUp, Eye, Mail, Download, Search, Filter, ChevronUp, ChevronDown, CreditCard as Edit, X } from 'lucide-react';
+import { Users, TrendingUp, Eye, Mail, Download, Search, Filter, ChevronUp, ChevronDown, CreditCard as Edit, X, Clock, CheckCircle, XCircle } from 'lucide-react';
 import { useLeads } from '../hooks/useLeads';
 import { fetchTeamMembers } from '../lib/supabase';
 import LeadEditModal from '../components/LeadEditModal';
@@ -22,6 +22,7 @@ const AdminDashboard: React.FC = () => {
   const [search, setSearch] = useState('');
   const [filterStatus, setFilterStatus] = useState('');
   const [filterAssigned, setFilterAssigned] = useState('');
+  const [filterAssignmentStatus, setFilterAssignmentStatus] = useState<'' | 'pending' | 'accepted' | 'declined'>('');
   const [sortField, setSortField] = useState<SortField>('created_at');
   const [sortDir, setSortDir] = useState<SortDir>('desc');
 
@@ -50,6 +51,7 @@ const AdminDashboard: React.FC = () => {
     }
     if (filterStatus) list = list.filter(l => (l.status || 'New') === filterStatus);
     if (filterAssigned) list = list.filter(l => l.assigned_to === filterAssigned);
+    if (filterAssignmentStatus) list = list.filter(l => l.assignment_status === filterAssignmentStatus);
 
     return [...list].sort((a, b) => {
       const av = (a[sortField] ?? '') as string;
@@ -152,6 +154,10 @@ const AdminDashboard: React.FC = () => {
     ? Math.round(((statusStats['Converted'] || 0) / totalLeads) * 100)
     : 0;
 
+  const pendingAcceptance = leads.filter(l => l.assignment_status === 'pending').length;
+  const acceptedCount     = leads.filter(l => l.assignment_status === 'accepted').length;
+  const declinedCount     = leads.filter(l => l.assignment_status === 'declined').length;
+
   const serviceInterests = leads.reduce((acc, l) => {
     const s = l.service || 'Not specified';
     acc[s] = (acc[s] || 0) + 1;
@@ -218,6 +224,44 @@ const AdminDashboard: React.FC = () => {
               Top service interest: <span className="font-semibold">{getServiceLabel(topService)}</span>
             </div>
           )}
+
+          {/* Assignment status tabs */}
+          <div className="flex gap-1 mb-4 bg-white rounded-xl border border-slate-100 shadow-sm p-1.5 w-fit">
+            {([
+              { key: '' as const, label: 'All Leads', count: leads.length },
+              { key: 'pending' as const, label: 'Pending Acceptance', count: pendingAcceptance },
+              { key: 'accepted' as const, label: 'Accepted', count: acceptedCount },
+              { key: 'declined' as const, label: 'Declined', count: declinedCount },
+            ]).map(tab => (
+              <button
+                key={tab.key}
+                onClick={() => setFilterAssignmentStatus(tab.key)}
+                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${
+                  filterAssignmentStatus === tab.key
+                    ? 'bg-blue-600 text-white shadow-sm'
+                    : 'text-slate-600 hover:bg-slate-50'
+                }`}
+              >
+                {tab.key === 'pending' && <Clock className="h-3.5 w-3.5" />}
+                {tab.key === 'accepted' && <CheckCircle className="h-3.5 w-3.5" />}
+                {tab.key === 'declined' && <XCircle className="h-3.5 w-3.5" />}
+                {tab.label}
+                {tab.count > 0 && (
+                  <span className={`text-xs px-1.5 py-0.5 rounded-full font-semibold ${
+                    filterAssignmentStatus === tab.key
+                      ? 'bg-white/20 text-white'
+                      : tab.key === 'pending'
+                      ? 'bg-amber-100 text-amber-700'
+                      : tab.key === 'declined'
+                      ? 'bg-red-100 text-red-700'
+                      : 'bg-slate-100 text-slate-600'
+                  }`}>
+                    {tab.count}
+                  </span>
+                )}
+              </button>
+            ))}
+          </div>
 
           {/* Filters */}
           <div className="bg-white rounded-xl shadow-sm border border-slate-100 p-4 mb-4 flex flex-wrap gap-3 items-center">
@@ -332,6 +376,7 @@ const AdminDashboard: React.FC = () => {
                       { label: 'Status', field: 'status' as SortField },
                       { label: 'Service', field: null },
                       { label: 'Assigned', field: 'assigned_to' as SortField },
+                      { label: 'Accept', field: null },
                       { label: 'Date', field: 'created_at' as SortField },
                       { label: 'Message', field: null },
                       { label: '', field: null },
@@ -386,6 +431,24 @@ const AdminDashboard: React.FC = () => {
                       </td>
                       <td className="px-4 py-4 whitespace-nowrap text-sm text-slate-600">
                         {lead.assigned_to || <span className="text-slate-400">Unassigned</span>}
+                      </td>
+                      <td className="px-4 py-4 whitespace-nowrap">
+                        {lead.assignment_status === 'pending' && (
+                          <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-amber-100 text-amber-700 rounded-full text-xs font-medium">
+                            <Clock className="h-3 w-3" />Pending
+                          </span>
+                        )}
+                        {lead.assignment_status === 'accepted' && (
+                          <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-emerald-100 text-emerald-700 rounded-full text-xs font-medium">
+                            <CheckCircle className="h-3 w-3" />Accepted
+                          </span>
+                        )}
+                        {lead.assignment_status === 'declined' && (
+                          <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-red-100 text-red-700 rounded-full text-xs font-medium">
+                            <XCircle className="h-3 w-3" />Declined
+                          </span>
+                        )}
+                        {!lead.assignment_status && <span className="text-slate-300">—</span>}
                       </td>
                       <td className="px-4 py-4 whitespace-nowrap text-sm text-slate-500">
                         {formatDate(lead.created_at)}

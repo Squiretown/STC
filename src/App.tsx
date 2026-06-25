@@ -19,6 +19,7 @@ import SettingsEditor from './pages/admin/SettingsEditor';
 import ProjectsEditor from './pages/admin/ProjectsEditor';
 import AppointmentsPage from './pages/admin/AppointmentsPage';
 import RoutingRulesEditor from './pages/admin/RoutingRulesEditor';
+import LeadAccept from './pages/LeadAccept';
 import Work from './pages/Work';
 import ProtectedRoute from './components/ProtectedRoute';
 import Footer from './components/Footer';
@@ -37,10 +38,11 @@ function AppShell() {
   const location = useLocation();
   const isHome = location.pathname === '/';
   const isAdmin = location.pathname.startsWith('/admin');
+  const isStandalone = location.pathname === '/lead-accept';
 
   return (
     <div className="min-h-screen bg-white overflow-x-hidden">
-      {!isHome && !isAdmin && <Navbar />}
+      {!isHome && !isAdmin && !isStandalone && <Navbar />}
       <main id="main-content">
         <Routes>
           <Route path="/" element={<Home />} />
@@ -54,6 +56,7 @@ function AppShell() {
           <Route path="/sms-terms" element={<SmsTerms />} />
           <Route path="/terms" element={<TermsOfService />} />
           <Route path="/work" element={<Work />} />
+          <Route path="/lead-accept" element={<LeadAccept />} />
           <Route path="/admin" element={
             <ProtectedRoute>
               <AdminLayout />
@@ -68,7 +71,7 @@ function AppShell() {
           </Route>
         </Routes>
       </main>
-      {!isHome && !isAdmin && <Footer />}
+      {!isHome && !isAdmin && !isStandalone && <Footer />}
     </div>
   );
 }

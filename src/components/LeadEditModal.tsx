@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { X, Save, Trash2, AlertTriangle, Calendar, MessageSquare, Plus, Check, Phone, Mail, Users, Briefcase, FileText, Clock } from 'lucide-react';
-import { supabase, fetchLeadNotes, fetchLeadActivities } from '../lib/supabase';
+import { X, Save, Trash2, AlertTriangle, Calendar, MessageSquare, Plus, Check, Phone, Mail, Users, Briefcase, FileText, Clock, GitBranch, CheckCircle, XCircle, RefreshCw } from 'lucide-react';
+import { supabase, fetchLeadNotes, fetchLeadActivities, fetchLeadAssignmentHistory } from '../lib/supabase';
 import { STATUS_OPTIONS, SERVICE_OPTIONS, ACTIVITY_TYPE_OPTIONS, getActivityTypeLabel } from '../lib/constants';
 import { useAuth } from '../hooks/useAuth';
-import type { Lead, LeadNote, LeadActivity } from '../lib/supabase';
+import type { Lead, LeadNote, LeadActivity, LeadAssignmentHistory, TeamMember } from '../lib/supabase';
+import { fetchTeamMembers } from '../lib/supabase';
 
 interface LeadEditModalProps {
   lead: Lead | null;
@@ -12,7 +13,7 @@ interface LeadEditModalProps {
   onClose: () => void;
 }
 
-type Tab = 'details' | 'activities' | 'notes';
+type Tab = 'details' | 'assignment' | 'activities' | 'notes';
 
 const ACTIVITY_ICONS: Record<string, React.ElementType> = {
   call: Phone,
@@ -51,6 +52,16 @@ const LeadEditModal: React.FC<LeadEditModalProps> = ({ lead, isOpen, onSave, onC
   const [newNote, setNewNote] = useState('');
   const [savingNote, setSavingNote] = useState(false);
 
+  // Assignment state
+  const [assignmentHistory, setAssignmentHistory] = useState<LeadAssignmentHistory[]>([]);
+  const [loadingHistory, setLoadingHistory] = useState(false);
+  const [teamMembers, setTeamMembers] = useState<TeamMember[]>([]);
+  const [showReassignForm, setShowReassignForm] = useState(false);
+  const [reassignName, setReassignName] = useState('');
+  const [reassignEmail, setReassignEmail] = useState('');
+  const [reassignNote, setReassignNote] = useState('');
+  const [reassigning, setReassigning] = useState(false);
+
   useEffect(() => {
     if (!lead) return;
     setFormData({
@@ -85,6 +96,14 @@ const LeadEditModal: React.FC<LeadEditModalProps> = ({ lead, isOpen, onSave, onC
         setNotes(data);
         setLoadingNotes(false);
       });
+    }
+    if (activeTab === 'assignment') {
+      setLoadingHistory(true);
+      fetchLeadAssignmentHistory(lead.id).then(data => {
+        setAssignmentHistory(data);
+        setLoadingHistory(false);
+      });
+      fetchTeamMembers().then(setTeamMembers);
     }
   }, [lead, isOpen, activeTab]);
 
@@ -176,6 +195,74 @@ const LeadEditModal: React.FC<LeadEditModalProps> = ({ lead, isOpen, onSave, onC
     }
   };
 
+  const handleReassign = async () => {
+    if (!lead?.id || !reassignEmail.trim() || !reassignName.trim()) return;
+    setReassigning(true);
+    try {
+      const { error: err } = await supabase.from('leads').update({
+        assigned_to:                 reassignName.trim(),
+        assigned_to_email:           reassignEmail.trim(),
+        assignment_status:           'pending',
+        assignment_token:            null,
+        assignment_token_expires_at: null,
+        assignment_declined_reason:  null,
+        updated_at:                  new Date().toISOString(),
+      }).eq('id', lead.id);
+      if (err) throw err;
+
+      await supabase.from('lead_assignment_history').insert({
+        lead_id:           lead.id,
+        action:            'reassigned',
+        assigned_to_name:  reassignName.trim(),
+        assigned_to_email: reassignEmail.trim(),
+        performed_by:      user?.email ?? 'admin',
+        note:              reassignNote.trim() || null,
+      });
+
+      const updatedHistory = await fetchLeadAssignmentHistory(lead.id);
+      setAssignmentHistory(updatedHistory);
+      setShowReassignForm(false);
+      setReassignName('');
+      setReassignEmail('');
+      setReassignNote('');
+    } catch (e) {
+      console.error('Reassign failed:', e);
+    } finally {
+      setReassigning(false);
+    }
+  };
+
+  const handleAdminRespond = async (act: 'accepted' | 'declined') => {
+    if (!lead?.id) return;
+    setReassigning(true);
+    try {
+      await supabase.from('leads').update({
+        assignment_status:  act,
+        assignment_token:   null,
+        updated_at:         new Date().toISOString(),
+      }).eq('id', lead.id);
+
+      // Lookup team_member_id by matching email
+      const tm = teamMembers.find(m => m.email === lead.assigned_to_email);
+
+      await supabase.from('lead_assignment_history').insert({
+        lead_id:           lead.id,
+        action:            act,
+        assigned_to_name:  lead.assigned_to,
+        assigned_to_email: lead.assigned_to_email,
+        team_member_id:    tm?.id ?? null,
+        performed_by:      user?.email ?? 'admin',
+      });
+
+      const updatedHistory = await fetchLeadAssignmentHistory(lead.id);
+      setAssignmentHistory(updatedHistory);
+    } catch (e) {
+      console.error('Admin respond failed:', e);
+    } finally {
+      setReassigning(false);
+    }
+  };
+
   const handleAddNote = async () => {
     if (!lead?.id || !newNote.trim()) return;
     setSavingNote(true);
@@ -204,6 +291,7 @@ const LeadEditModal: React.FC<LeadEditModalProps> = ({ lead, isOpen, onSave, onC
 
   const tabs: { id: Tab; label: string; icon: React.ElementType }[] = [
     { id: 'details', label: 'Details', icon: FileText },
+    { id: 'assignment', label: 'Assignment', icon: GitBranch },
     { id: 'activities', label: 'Appointments', icon: Calendar },
     { id: 'notes', label: 'Notes', icon: MessageSquare },
   ];
@@ -395,6 +483,188 @@ const LeadEditModal: React.FC<LeadEditModalProps> = ({ lead, isOpen, onSave, onC
                     </div>
                   </div>
                 )}
+              </div>
+            )}
+
+            {/* ── ASSIGNMENT TAB ── */}
+            {activeTab === 'assignment' && (
+              <div className="space-y-4">
+                {/* Current assignment status */}
+                <div className="bg-slate-50 border border-slate-200 rounded-xl p-4 space-y-3">
+                  <h4 className="text-sm font-semibold text-slate-700 flex items-center gap-2">
+                    <GitBranch className="h-4 w-4 text-blue-600" /> Current Assignment
+                  </h4>
+                  {lead.assigned_to ? (
+                    <div className="grid grid-cols-2 gap-3 text-sm">
+                      <div>
+                        <p className="text-xs text-slate-400 mb-0.5">Assignee</p>
+                        <p className="font-medium text-slate-800">{lead.assigned_to}</p>
+                        {lead.assigned_to_email && (
+                          <p className="text-xs text-slate-500">{lead.assigned_to_email}</p>
+                        )}
+                      </div>
+                      <div>
+                        <p className="text-xs text-slate-400 mb-0.5">Status</p>
+                        {!lead.assignment_status && <p className="text-slate-500">—</p>}
+                        {lead.assignment_status === 'pending' && (
+                          <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-amber-100 text-amber-800 rounded-full text-xs font-medium">
+                            <Clock className="h-3 w-3" /> Pending
+                          </span>
+                        )}
+                        {lead.assignment_status === 'accepted' && (
+                          <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-emerald-100 text-emerald-800 rounded-full text-xs font-medium">
+                            <CheckCircle className="h-3 w-3" /> Accepted
+                          </span>
+                        )}
+                        {lead.assignment_status === 'declined' && (
+                          <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-red-100 text-red-800 rounded-full text-xs font-medium">
+                            <XCircle className="h-3 w-3" /> Declined
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                  ) : (
+                    <p className="text-sm text-slate-400">No assignee yet.</p>
+                  )}
+
+                  {/* Declined reason */}
+                  {lead.assignment_status === 'declined' && lead.assignment_declined_reason && (
+                    <div className="bg-red-50 border border-red-100 rounded-lg px-3 py-2 text-xs text-red-700">
+                      <span className="font-semibold">Reason: </span>{lead.assignment_declined_reason}
+                    </div>
+                  )}
+
+                  {/* Admin accept/decline for pending leads */}
+                  {lead.assignment_status === 'pending' && (
+                    <div className="flex gap-2 pt-1">
+                      <button
+                        onClick={() => handleAdminRespond('accepted')}
+                        disabled={reassigning}
+                        className="flex items-center gap-1.5 px-3 py-1.5 bg-emerald-600 text-white text-xs font-medium rounded-lg hover:bg-emerald-700 disabled:opacity-50 transition-colors"
+                      >
+                        <CheckCircle className="h-3.5 w-3.5" /> Accept on behalf
+                      </button>
+                      <button
+                        onClick={() => handleAdminRespond('declined')}
+                        disabled={reassigning}
+                        className="flex items-center gap-1.5 px-3 py-1.5 bg-red-600 text-white text-xs font-medium rounded-lg hover:bg-red-700 disabled:opacity-50 transition-colors"
+                      >
+                        <XCircle className="h-3.5 w-3.5" /> Decline on behalf
+                      </button>
+                    </div>
+                  )}
+                </div>
+
+                {/* Reassign panel */}
+                <div>
+                  {!showReassignForm ? (
+                    <button
+                      onClick={() => setShowReassignForm(true)}
+                      className="flex items-center gap-1.5 px-3 py-2 text-sm font-medium text-blue-600 hover:bg-blue-50 rounded-lg transition-colors border border-blue-200"
+                    >
+                      <RefreshCw className="h-4 w-4" />
+                      {lead.assigned_to ? 'Reassign Lead' : 'Assign Lead'}
+                    </button>
+                  ) : (
+                    <div className="bg-blue-50 border border-blue-200 rounded-xl p-4 space-y-3">
+                      <p className="text-sm font-medium text-blue-800">Reassign Lead</p>
+                      {teamMembers.length > 0 && (
+                        <select
+                          value=""
+                          onChange={e => {
+                            const m = teamMembers.find(t => t.id === e.target.value);
+                            if (m) { setReassignName(m.name); setReassignEmail(m.email); }
+                          }}
+                          className="w-full px-2 py-2 border border-blue-200 rounded-lg text-sm bg-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        >
+                          <option value="">Pick from team…</option>
+                          {teamMembers.map(m => (
+                            <option key={m.id} value={m.id}>{m.name} ({m.email})</option>
+                          ))}
+                        </select>
+                      )}
+                      <div className="grid grid-cols-2 gap-2">
+                        <input
+                          value={reassignName}
+                          onChange={e => setReassignName(e.target.value)}
+                          placeholder="Name"
+                          className="px-2 py-2 border border-blue-200 rounded-lg text-sm bg-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        />
+                        <input
+                          type="email"
+                          value={reassignEmail}
+                          onChange={e => setReassignEmail(e.target.value)}
+                          placeholder="email@example.com"
+                          className="px-2 py-2 border border-blue-200 rounded-lg text-sm bg-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        />
+                      </div>
+                      <input
+                        value={reassignNote}
+                        onChange={e => setReassignNote(e.target.value)}
+                        placeholder="Reason for reassignment (optional)"
+                        className="w-full px-2 py-2 border border-blue-200 rounded-lg text-sm bg-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      />
+                      <div className="flex gap-2">
+                        <button
+                          onClick={handleReassign}
+                          disabled={reassigning || !reassignName.trim() || !reassignEmail.trim()}
+                          className="px-3 py-1.5 bg-blue-600 text-white text-sm rounded-lg hover:bg-blue-700 disabled:opacity-50 flex items-center gap-1.5"
+                        >
+                          {reassigning ? <RefreshCw className="h-3.5 w-3.5 animate-spin" /> : <Check className="h-3.5 w-3.5" />}
+                          {reassigning ? 'Reassigning…' : 'Reassign'}
+                        </button>
+                        <button
+                          onClick={() => { setShowReassignForm(false); setReassignName(''); setReassignEmail(''); }}
+                          className="px-3 py-1.5 bg-white border border-slate-300 text-slate-700 text-sm rounded-lg hover:bg-slate-50"
+                        >
+                          Cancel
+                        </button>
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                {/* History */}
+                <div>
+                  <h4 className="text-sm font-semibold text-slate-700 mb-3">Assignment History</h4>
+                  {loadingHistory ? (
+                    <div className="text-center py-6">
+                      <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-blue-600 mx-auto" />
+                    </div>
+                  ) : assignmentHistory.length === 0 ? (
+                    <p className="text-sm text-slate-400 py-4 text-center">No assignment history yet.</p>
+                  ) : (
+                    <div className="space-y-2">
+                      {assignmentHistory.map(h => (
+                        <div key={h.id} className="flex items-start gap-3 text-sm">
+                          <div className={`w-7 h-7 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5 ${
+                            h.action === 'accepted' ? 'bg-emerald-100' :
+                            h.action === 'declined' ? 'bg-red-100' :
+                            h.action === 'reminder_sent' ? 'bg-amber-100' :
+                            'bg-blue-100'
+                          }`}>
+                            {h.action === 'accepted' && <CheckCircle className="h-3.5 w-3.5 text-emerald-600" />}
+                            {h.action === 'declined' && <XCircle className="h-3.5 w-3.5 text-red-600" />}
+                            {h.action === 'reminder_sent' && <Clock className="h-3.5 w-3.5 text-amber-600" />}
+                            {(h.action === 'assigned' || h.action === 'reassigned') && <GitBranch className="h-3.5 w-3.5 text-blue-600" />}
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <p className="font-medium text-slate-700 capitalize">
+                              {h.action.replace('_', ' ')}
+                              {h.assigned_to_name && ` → ${h.assigned_to_name}`}
+                            </p>
+                            {h.note && <p className="text-xs text-slate-500 mt-0.5">{h.note}</p>}
+                            <p className="text-xs text-slate-400 mt-0.5">
+                              {h.performed_by} · {new Date(h.created_at).toLocaleString('en-US', {
+                                month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit',
+                              })}
+                            </p>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
               </div>
             )}
 

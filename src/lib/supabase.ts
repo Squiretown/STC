@@ -28,11 +28,28 @@ export interface Lead {
   service?: string;
   source?: string;
   assigned_to?: string;
+  assigned_to_email?: string;
+  assignment_status?: 'pending' | 'accepted' | 'declined' | null;
+  assignment_token?: string | null;
+  assignment_token_expires_at?: string | null;
+  assignment_declined_reason?: string | null;
   tags?: string[];
   last_contacted?: string;
   sms_consent?: boolean;
   sms_consent_at?: string | null;
   sms_consent_text?: string | null;
+}
+
+export interface LeadAssignmentHistory {
+  id: string;
+  lead_id: string;
+  action: 'assigned' | 'accepted' | 'declined' | 'reassigned' | 'reminder_sent';
+  assigned_to_name?: string;
+  assigned_to_email?: string;
+  team_member_id?: string | null;
+  performed_by: string;
+  note?: string | null;
+  created_at: string;
 }
 
 export interface LeadNote {
@@ -113,17 +130,27 @@ export const fetchLeadActivities = async (leadId: string): Promise<LeadActivity[
   return data || [];
 };
 
+export const fetchLeadAssignmentHistory = async (leadId: string): Promise<LeadAssignmentHistory[]> => {
+  const { data, error } = await supabase
+    .from('lead_assignment_history')
+    .select('*')
+    .eq('lead_id', leadId)
+    .order('created_at', { ascending: false });
+  if (error) { console.error('Error fetching assignment history:', error); return []; }
+  return data || [];
+};
+
 export const fetchTeamMembers = async (): Promise<TeamMember[]> => {
   const { data, error } = await supabase
     .from('team_members')
     .select('*')
     .order('name');
-  
+
   if (error) {
     console.error('Error fetching team members:', error);
     return [];
   }
-  
+
   return data || [];
 };
 

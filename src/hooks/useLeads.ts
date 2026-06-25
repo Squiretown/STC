@@ -164,12 +164,28 @@ export const useLeads = () => {
     return () => { subscription.unsubscribe(); };
   }, [fetchLeads]);
 
+  const reassignLead = useCallback(async (
+    leadId: string,
+    assignToName: string,
+    assignToEmail: string,
+  ) => {
+    return updateLead(leadId, {
+      assigned_to: assignToName,
+      assigned_to_email: assignToEmail,
+      assignment_status: 'pending',
+      assignment_token: null,
+      assignment_token_expires_at: null,
+      assignment_declined_reason: null,
+    } as Partial<Lead>);
+  }, [updateLead]);
+
   return {
     leads,
     loading,
     error,
     updateLead,
     deleteLead,
+    reassignLead,
     bulkUpdateLeads,
     bulkDeleteLeads,
     exportLeads,

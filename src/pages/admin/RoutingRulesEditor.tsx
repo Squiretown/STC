@@ -61,6 +61,7 @@ const RuleForm: React.FC<RuleFormProps> = ({ initial, teamMembers, onSave, onCan
   const [notifyEmailsRaw, setNotifyEmailsRaw] = useState(
     (initial?.notify_emails ?? []).join(', ')
   );
+  const [reminderHours, setReminderHours] = useState(initial?.reminder_hours ?? 24);
   const [saving, setSaving] = useState(false);
   const [errors, setErrors] = useState<string[]>([]);
 
@@ -124,6 +125,7 @@ const RuleForm: React.FC<RuleFormProps> = ({ initial, teamMembers, onSave, onCan
       assign_to_name: assignToName.trim(),
       assign_to_email: assignToEmail.trim(),
       notify_emails: notifyEmails,
+      reminder_hours: reminderHours,
     });
     setSaving(false);
   };
@@ -308,6 +310,22 @@ const RuleForm: React.FC<RuleFormProps> = ({ initial, teamMembers, onSave, onCan
           <span className={`inline-block h-3 w-3 transform rounded-full bg-white transition-transform ${active ? 'translate-x-5' : 'translate-x-1'}`} />
         </button>
         <span className="text-sm text-slate-700">{active ? 'Rule is active' : 'Rule is inactive'}</span>
+      </div>
+
+      {/* Reminder hours */}
+      <div>
+        <label className="block text-sm font-medium text-slate-700 mb-1">
+          Reminder after (hours)
+        </label>
+        <input
+          type="number"
+          value={reminderHours}
+          onChange={e => setReminderHours(Math.max(1, Math.min(168, Number(e.target.value))))}
+          min={1}
+          max={168}
+          className="w-32 px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+        />
+        <p className="text-xs text-slate-400 mt-1">Send a reminder if no response within this many hours (1–168). Default: 24.</p>
       </div>
 
       <div className="flex gap-3 pt-2">

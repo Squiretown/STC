@@ -16,6 +16,7 @@ export interface RoutingRule {
   assign_to_name: string;
   assign_to_email: string;
   notify_emails: string[];
+  reminder_hours: number;
   created_at: string;
   updated_at: string;
 }

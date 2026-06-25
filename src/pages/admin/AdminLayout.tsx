@@ -1,12 +1,31 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useLocation, Outlet } from 'react-router-dom';
 import { Building2, Users, FileText, Settings, LogOut, Menu, X, Briefcase, Calendar, GitBranch } from 'lucide-react';
 import { useAuth } from '../../hooks/useAuth';
+import { supabase } from '../../lib/supabase';
 
 const AdminLayout: React.FC = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [pendingCount, setPendingCount] = useState(0);
   const location = useLocation();
   const { user, signOut } = useAuth();
+
+  useEffect(() => {
+    const fetchPending = async () => {
+      const { count } = await supabase
+        .from('leads')
+        .select('id', { count: 'exact', head: true })
+        .eq('assignment_status', 'pending');
+      setPendingCount(count ?? 0);
+    };
+    fetchPending();
+
+    const sub = supabase
+      .channel('pending_assignments')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'leads' }, fetchPending)
+      .subscribe();
+    return () => { sub.unsubscribe(); };
+  }, []);
 
   const navigation = [
     { name: 'Leads', href: '/admin', icon: Users },
@@ -59,7 +78,14 @@ const AdminLayout: React.FC = () => {
                   >
                     <Icon className={`h-4 w-4 mr-3 ${isActive ? 'text-blue-600' : 'text-slate-400'}`} />
                     {item.name}
-                    {isActive && <div className="ml-auto w-1.5 h-1.5 bg-blue-600 rounded-full" />}
+                    <div className="ml-auto flex items-center gap-1">
+                      {item.name === 'Routing' && pendingCount > 0 && (
+                        <span className="px-1.5 py-0.5 bg-amber-500 text-white text-xs font-bold rounded-full min-w-[18px] text-center">
+                          {pendingCount}
+                        </span>
+                      )}
+                      {isActive && <div className="w-1.5 h-1.5 bg-blue-600 rounded-full" />}
+                    </div>
                   </Link>
                 </li>
               );
