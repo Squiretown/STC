@@ -99,11 +99,8 @@ const CTAForm: React.FC = () => {
       style={{ background: 'linear-gradient(180deg,#0d1426,#0a0f1f)', color: '#fff' }}
       aria-labelledby="cta-heading"
     >
-      <div className="w-full max-w-[1200px] mx-auto px-7">
-        <div
-          className="grid gap-14 py-[76px] items-start"
-          style={{ gridTemplateColumns: '1fr 1.05fr' }}
-        >
+      <div className="w-full max-w-[1200px] mx-auto px-4 sm:px-7">
+        <div className="grid gap-10 lg:gap-14 py-14 lg:py-[76px] items-start grid-cols-1 lg:grid-cols-2">
           {/* Left copy */}
           <div>
             <p

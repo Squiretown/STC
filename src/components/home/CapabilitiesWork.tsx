@@ -20,14 +20,11 @@ const work = [
 const CapabilitiesWork: React.FC = () => (
   <section
     id="capabilities"
-    className="py-[84px] bg-white"
+    className="py-14 lg:py-[84px] bg-white"
     aria-labelledby="cap-heading"
   >
-    <div className="w-full max-w-[1200px] mx-auto px-7">
-      <div
-        className="grid gap-14"
-        style={{ gridTemplateColumns: 'clamp(300px,1.55fr,1fr) 1fr' }}
-      >
+    <div className="w-full max-w-[1200px] mx-auto px-4 sm:px-7">
+      <div className="grid gap-10 lg:gap-14 grid-cols-1 lg:grid-cols-2">
         {/* Left: Capabilities */}
         <div>
           <div className="mb-8">

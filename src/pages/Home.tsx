@@ -25,8 +25,7 @@ const Home: React.FC = () => (
         aria-hidden="true"
       />
 
-      <div className="relative w-full max-w-[1200px] mx-auto px-7 py-[88px] grid gap-14 items-center"
-        style={{ gridTemplateColumns: '1fr 1.1fr' }}>
+      <div className="relative w-full max-w-[1200px] mx-auto px-4 sm:px-7 py-14 lg:py-[88px] grid grid-cols-1 lg:grid-cols-[1fr_1.1fr] gap-10 lg:gap-14 items-center">
 
         {/* Left copy */}
         <div className="flex flex-col">

@@ -6,13 +6,10 @@ const HomeFooter: React.FC = () => (
     role="contentinfo"
     style={{ background: '#0a0f1f', color: '#fff' }}
   >
-    <div className="w-full max-w-[1200px] mx-auto px-7 pt-[64px] pb-[40px]">
+    <div className="w-full max-w-[1200px] mx-auto px-4 sm:px-7 pt-10 lg:pt-[64px] pb-[40px]">
       <div
-        className="grid gap-10 pb-[48px]"
-        style={{
-          gridTemplateColumns: 'minmax(0,1.8fr) minmax(0,1fr) minmax(0,1fr)',
-          borderBottom: '1px solid rgba(255,255,255,0.08)',
-        }}
+        className="grid gap-10 pb-[48px] grid-cols-1 sm:grid-cols-2 lg:grid-cols-[minmax(0,1.8fr)_minmax(0,1fr)_minmax(0,1fr)]"
+        style={{ borderBottom: '1px solid rgba(255,255,255,0.08)' }}
       >
         {/* Left: brand + address */}
         <div>
